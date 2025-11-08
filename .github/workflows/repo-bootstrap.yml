@@ -1,5 +1,4 @@
 name: Repo Bootstrap (One-Time)
-
 on:
   workflow_dispatch:
 
@@ -14,132 +13,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Ensure base layout and files
+      - name: Create missing files
         run: |
-          set -euo pipefail
           mkdir -p .github/workflows ui
-          # Root README
-          if [ ! -f README.md ]; then
-            cat > README.md <<'EOF'
-# Zoning Intelligence (Monorepo)
-
-## Structure
-- Backend (Python): `zoning.py`, `engine/`, `parsers/`, `rules/`, `data/`, `tests/`
-- Frontend (React + Vite + Tailwind): `ui/`
-
-## Backend
-- Install: `pip install -r requirements-lock.txt` (or `requirements.txt`)
-- Run: `python3 zoning.py --apn 0204050712 --city austin --out out.json`
-
-## Frontend
-- `cd ui && npm install && npm run dev`
-
-## Contract
-- Output JSON has 11 required fields consumed by the UI.
-
-## CI
-- `.github/workflows/python.yml` (backend)
-- `.github/workflows/ui.yml` (frontend)
-EOF
-          fi
-
-          # .gitignore
-          if [ ! -f .gitignore ]; then
-            cat > .gitignore <<'EOF'
-.DS_Store
-__pycache__/
-.pytest_cache/
-.venv/
-venv/
-node_modules/
-dist/
-build/
-backups/
-data/austin_test*/
-tests/golden_new/
-EOF
-          fi
-
-          # UI env example
-          mkdir -p ui
-          if [ ! -f ui/.env.example ]; then
-            echo "VITE_API_BASE=http://localhost:3000" > ui/.env.example
-          fi
-
-          # Backend CI
-          if [ ! -f .github/workflows/python.yml ]; then
-            cat > .github/workflows/python.yml <<'EOF'
-name: Python CI
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install
-        run: |
-          if [ -f requirements-lock.txt ]; then
-            pip install -r requirements-lock.txt
-          else
-            pip install -r requirements.txt
-          fi
-      - name: Tests
-        run: pytest -q || true
-EOF
-          fi
-
-          # UI CI
-          if [ ! -f .github/workflows/ui.yml ]; then
-            cat > .github/workflows/ui.yml <<'EOF'
-name: UI CI
-on: [push, pull_request]
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ui
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Install
-        run: npm ci || npm install
-      - name: Build
-        run: npm run build || true
-      - name: Test
-        run: npm test --if-present || true
-EOF
-          fi
-
-          # Optional workspace map to help AI editors
-          if [ ! -f cursor_workspace.md ]; then
-            cat > cursor_workspace.md <<'EOF'
-# Cursor Workspace Map
-- Backend entry: `zoning.py`
-- Backend tests: `tests/`
-- Backend deps: `requirements(-lock).txt`
-- UI entry: `ui/` (React + Vite)
-- UI deps: `ui/package.json`
-- Contract: 11 JSON fields (backend ↔ UI)
-- CI: `.github/workflows/`
-EOF
-          fi
+          echo "# Zoning Intelligence" > README.md
+          echo ".DS_Store\n__pycache__/\n.venv/\nnode_modules/\n" > .gitignore
+          echo "VITE_API_BASE=http://localhost:3000" > ui/.env.example
+          echo "# Cursor Workspace Map" > cursor_workspace.md
+          echo "ok" > .github/workflows/.keep
 
       - name: Create PR with changes
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: "chore: bootstrap repo for Cursor (CI, ignores, docs)"
-          title: "Bootstrap: CI + ignores + docs"
-          body: |
-            This PR normalizes the repo so Cursor/GitHub can operate smoothly:
-            - Adds root README and .gitignore (safe defaults)
-            - Adds backend CI (python.yml) and UI CI (ui.yml)
-            - Adds ui/.env.example
-            - Adds cursor_workspace.md
+          commit-message: "chore: bootstrap repo (README, ignores, env)"
+          title: "Bootstrap repo"
+          body: "Adds README, .gitignore, ui/.env.example, and cursor map for Cursor setup."
           branch: chore/bootstrap-repo
           delete-branch: true

@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.pytest_cache/
+
+# Node / UI
+node_modules/
+dist/
+build/
+.ui-cache/
+
+# Local data / artifacts
+backups/
+data/austin_test*/
+tests/golden_new/
+
+# Editors
+.vscode/
+.idea/

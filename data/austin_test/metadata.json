@@ -1,0 +1,9 @@
+{
+  "parcel_source": "data/austin/parcels.geojson",
+  "zoning_source": "data/austin/zoning.geojson",
+  "parcel_count": 5,
+  "zoning_count": 3,
+  "apn_field": "APN",
+  "zone_field": "zone",
+  "loaded_date": "1762608617.9529297"
+}

@@ -1,0 +1,13 @@
+{
+  "parcel_source": "data/austin/parcels.geojson",
+  "zoning_source": "data/austin/zoning.geojson",
+  "parcel_count": 5,
+  "zoning_count": 3,
+  "apn_field": "APN",
+  "zone_field": "zone",
+  "source_crs_parcels": "EPSG:4326",
+  "source_crs_zoning": "EPSG:4326",
+  "target_crs": "EPSG:2277",
+  "loaded_date": "2025-11-08T08:47:32.505241",
+  "version": "1.0.1-dev"
+}

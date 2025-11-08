@@ -1,0 +1,56 @@
+/* Print-specific styles */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+
+  /* Hide UI chrome */
+  header,
+  footer,
+  nav,
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Optimize layout for print */
+  .print-view {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  /* Ensure single page */
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: #000;
+    background: #fff;
+  }
+
+  /* Prevent page breaks inside sections */
+  .mb-6 {
+    page-break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  /* Optimize colors for grayscale */
+  .text-gray-600,
+  .text-gray-500 {
+    color: #666 !important;
+  }
+
+  /* Remove shadows and borders */
+  .shadow-md,
+  .border {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+
+  /* Ensure text is readable */
+  h1, h2, h3 {
+    color: #000;
+    page-break-after: avoid;
+  }
+}
+

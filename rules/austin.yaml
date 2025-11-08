@@ -1,0 +1,60 @@
+version: 1
+jurisdiction: austin_tx
+crs:
+  input: EPSG:4326
+  internal: EPSG:2277
+
+zones:
+  SF-3:
+    height_ft: 35
+    far: 0.4
+    lot_coverage_pct: 40
+    setbacks_ft:
+      front: 25
+      side: 5
+      rear: 10
+    corner_lot:
+      street_side_setback_ft: 15
+  
+  SF-2:
+    height_ft: 30
+    far: 0.35
+    lot_coverage_pct: 35
+    setbacks_ft:
+      front: 25
+      side: 5
+      rear: 10
+    corner_lot:
+      street_side_setback_ft: 15
+  
+  SF-4:
+    height_ft: 40
+    far: 0.5
+    lot_coverage_pct: 45
+    setbacks_ft:
+      front: 25
+      side: 5
+      rear: 10
+    corner_lot:
+      street_side_setback_ft: 15
+  
+  MF-1:
+    height_ft: 45
+    far: 0.6
+    lot_coverage_pct: 50
+    setbacks_ft:
+      front: 25
+      side: 10
+      rear: 15
+    corner_lot:
+      street_side_setback_ft: 20
+
+overlays:
+  floodplain:
+    rules:
+      notes: "additional review required"
+  
+  airport:
+    rules:
+      notes: "height restrictions may apply"
+

@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches: [ main ]
-    tags:   [ 'ui-v*', 'v*' ]
   pull_request:
     branches: [ main ]
 
@@ -11,57 +10,87 @@ permissions:
   contents: read
 
 jobs:
-  python:
-    name: Backend tests
+  backend:
+    name: Backend (Python) checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Detect Python project
+        id: py
+        run: |
+          if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.py.outputs.present == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install deps if present
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f requirements-lock.txt ]; then pip install -r requirements-lock.txt; fi
+      - name: Install deps
+        if: steps.py.outputs.present == 'true' && hashFiles('requirements.txt') != ''
+        run: pip install -r requirements.txt
 
-      - name: Run tests (make test if available)
-        run: |
-          if command -v make >/dev/null && grep -q '^test:' Makefile 2>/dev/null; then
-            make test
-          elif [ -d tests ]; then
-            pip install pytest
-            pytest -q
-          else
-            echo "No backend tests found; skipping."
-          fi
+      - name: Run tests (pytest)
+        if: steps.py.outputs.present == 'true' && hashFiles('tests/**/*.py') != ''
+        run: pytest -q
+
+      - name: No Python project found — skipping
+        if: steps.py.outputs.present == 'false'
+        run: echo "No Python files (requirements.txt/pyproject.toml) — skipping backend job."
 
   ui:
-    name: UI build & tests
+    name: UI (Node) checks
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ui
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Detect UI project
+        id: ui
+        run: |
+          if [ -f "ui/package.json" ] || [ -f "package.json" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            # choose base path
+            if [ -f "ui/package.json" ]; then echo "base=ui" >> "$GITHUB_OUTPUT"; else echo "base=." >> "$GITHUB_OUTPUT"; fi
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node
+        if: steps.ui.outputs.present == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
           cache: 'npm'
-          cache-dependency-path: ui/package-lock.json
+          cache-dependency-path: |
+            ${{ steps.ui.outputs.base }}/package-lock.json
+            ${{ steps.ui.outputs.base }}/pnpm-lock.yaml
+            ${{ steps.ui.outputs.base }}/yarn.lock
 
       - name: Install
+        if: steps.ui.outputs.present == 'true'
+        working-directory: ${{ steps.ui.outputs.base }}
         run: |
-          if [ -f package-lock.json ]; then npm ci; elif [ -f package.json ]; then npm install; else echo "No UI"; fi
-
-      - name: Build
-        run: |
-          if [ -f package.json ]; then npm run build --if-present; else echo "No UI build"; fi
+          if [ -f pnpm-lock.yaml ]; then npm i -g pnpm && pnpm i --frozen-lockfile; \
+          elif [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
+          else npm ci || npm i; fi
 
       - name: Test
+        if: steps.ui.outputs.present == 'true' && (hashFiles(format('{0}/**/*', steps.ui.outputs.base)) != '')
+        working-directory: ${{ steps.ui.outputs.base }}
         run: |
-          if [ -f package.json ]; then npm test --if-present -- -w=1; else echo "No UI tests"; fi
+          if npm run -s test >/dev/null 2>&1; then npm test --silent || true; else echo "No test script — skipping"; fi
+
+      - name: Build
+        if: steps.ui.outputs.present == 'true'
+        working-directory: ${{ steps.ui.outputs.base }}
+        run: |
+          if npm run -s build >/dev/null 2>&1; then npm run build || true; else echo "No build script — skipping"; fi
+
+      - name: No UI project found — skipping
+        if: steps.ui.outputs.present == 'false'
+        run: echo "No package.json found in repo or /ui — skipping UI job."

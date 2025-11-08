@@ -17,10 +17,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Add only-if-missing files to avoid "no changes" failures
+      # Add only-if-missing files (nothing under .github/workflows/)
       - name: Add baseline files (no overwrite)
         run: |
-          mkdir -p .github/workflows
           [ -f .gitignore ] || cat > .gitignore <<'EOF'
           .DS_Store
           node_modules/
@@ -48,5 +47,5 @@ jobs:
           title: "chore: bootstrap repo"
           body: "Adds baseline files if missing. Safe to re-run."
           branch: chore/bootstrap-repo
-          branch-suffix: short-commit-hash   # avoids 'branch exists' push failures
+          branch-suffix: short-commit-hash   # avoids 'branch exists' collisions
           delete-branch: true

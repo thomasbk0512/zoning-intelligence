@@ -1,3 +1,4 @@
+UI v1.0.1 – ready for PR
 # Zoning Intelligence CLI - MVP
 
 A command-line tool for analyzing zoning regulations for parcels using APN or lat/lng coordinates.

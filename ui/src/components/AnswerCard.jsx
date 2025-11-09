@@ -7,6 +7,7 @@ import FeedbackSheet from './FeedbackSheet'
 import TraceModal from './TraceModal'
 import type { ZoningAnswer } from '../engine/answers/rules'
 import type { AnswerTrace } from '../engine/answers/trace'
+import type { CitationWithVersion } from '../engine/answers/citations'
 
 interface AnswerCardProps {
   answer: ZoningAnswer

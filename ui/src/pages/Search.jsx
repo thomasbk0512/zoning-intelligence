@@ -32,7 +32,7 @@ export default function Search() {
   useEffect(() => {
     const state = location.state as any
     if (state?.prefillIntent) {
-      setSearchType('apn') // Default to APN tab
+      setSearchType('nlq') // Default to NLQ tab
       if (state.prefillQuery) {
         setNlq(state.prefillQuery)
         const result = parseQuery(state.prefillQuery)

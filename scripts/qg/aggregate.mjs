@@ -72,8 +72,7 @@ if (existsSync(playwrightReportPath)) {
     summary.errors.push(`Failed to parse Playwright report: ${error.message}`)
   }
 } else {
-  // Playwright report is optional if E2E is disabled
-  console.warn('⚠️  Playwright report not found (E2E may be disabled)')
+  summary.errors.push('Playwright report not found')
 }
 
 // 2. Parse Lighthouse reports
@@ -150,31 +149,26 @@ if (existsSync(lhciDir)) {
     summary.errors.push(`Failed to parse Lighthouse reports: ${error.message}`)
   }
 } else {
-  // Lighthouse reports are optional if LH is disabled
-  console.warn('⚠️  Lighthouse reports not found (Lighthouse may be disabled)')
+  summary.errors.push('Lighthouse reports not found')
 }
 
 // 3. Parse a11y report
 const axeReportPath = join(ARTIFACTS_DIR, 'axe-report.json')
 if (existsSync(axeReportPath)) {
   try {
-    const content = readFileSync(axeReportPath, 'utf-8').trim()
-    if (content) {
-      const report = JSON.parse(content)
-      const violations = report.violations || []
-      
-      // Count serious or higher violations
-      summary.gates.a11y_serious_or_higher = violations.filter(v => 
-        v.impact === 'serious' || v.impact === 'critical'
-      ).length
-      
-      if (summary.gates.a11y_serious_or_higher > 0) {
-        summary.errors.push(`A11y: ${summary.gates.a11y_serious_or_higher} serious/critical violation(s)`)
-      }
+    const report = JSON.parse(readFileSync(axeReportPath, 'utf-8'))
+    const violations = report.violations || []
+    
+    // Count serious or higher violations
+    summary.gates.a11y_serious_or_higher = violations.filter(v => 
+      v.impact === 'serious' || v.impact === 'critical'
+    ).length
+    
+    if (summary.gates.a11y_serious_or_higher > 0) {
+      summary.errors.push(`A11y: ${summary.gates.a11y_serious_or_higher} serious/critical violation(s)`)
     }
   } catch (error) {
-    // A11y report is optional, don't fail if it's missing or invalid
-    console.warn(`⚠️  Could not parse a11y report: ${error.message}`)
+    summary.errors.push(`Failed to parse a11y report: ${error.message}`)
   }
 }
 
@@ -201,8 +195,7 @@ const telemetryPath = join(ARTIFACTS_DIR, 'telemetry.ndjson')
 summary.gates.telemetry_schema_validation_pass = existsSync(telemetryPath)
 
 if (!summary.gates.telemetry_schema_validation_pass) {
-  // Telemetry is optional if disabled
-  console.warn('⚠️  Telemetry file not found (telemetry may be disabled)')
+  summary.errors.push('Telemetry: Schema validation failed or file not found')
 }
 
 // 6. Bundle size check (from Lighthouse budget)
@@ -213,12 +206,7 @@ if (summary.gates.lh && Object.keys(summary.gates.lh).length > 0) {
 }
 
 // Determine final verdict
-// Only fail if there are actual threshold violations, not missing optional artifacts
-const criticalErrors = summary.errors.filter(err => 
-  !err.includes('not found') && 
-  !err.includes('may be disabled')
-)
-summary.verdict = criticalErrors.length === 0 ? 'PASS' : 'FAIL'
+summary.verdict = summary.errors.length === 0 ? 'PASS' : 'FAIL'
 
 // Write summary
 writeFileSync(OUTPUT_FILE, JSON.stringify(summary, null, 2))

@@ -1,0 +1,11 @@
+{
+  "release": "v1.1.2",
+  "health_report": "RELEASE_HEALTH_v1.1.2.md",
+  "obs_dashboard": "OBS_DASHBOARD.md",
+  "milestone": "v1.1.3 \u2014 Patch",
+  "issues": [
+    "17",
+    "18",
+    "19"
+  ]
+}

@@ -5,7 +5,6 @@ import Input from '../components/Input'
 import Button from '../components/Button'
 import Card from '../components/Card'
 import { getZoningByAPN, getZoningByLatLng, APIError } from '../lib/api'
-import { trackSearchSubmit, trackValidationError, trackErrorShown } from '../hooks/useTelemetry'
 import type { ZoningResult, SearchType } from '../types'
 
 export default function Search() {
@@ -45,12 +44,9 @@ export default function Search() {
       if (searchType === 'apn') {
         if (!apn.trim()) {
           setError('APN is required')
-          trackValidationError('apn', 'required')
-          trackSearchSubmit('apn', apn, false)
           setLoading(false)
           return
         }
-        trackSearchSubmit('apn', apn.trim(), true)
         result = await getZoningByAPN(apn.trim(), city)
       } else {
         const lat = parseFloat(latitude)
@@ -58,29 +54,22 @@ export default function Search() {
         
         if (isNaN(lat) || isNaN(lng)) {
           setError('Valid latitude and longitude are required')
-          trackValidationError('lat', 'format')
-          trackSearchSubmit('latlng', `${latitude},${longitude}`, false)
           setLoading(false)
           return
         }
         
         if (lat < -90 || lat > 90) {
           setError('Latitude must be between -90 and 90')
-          trackValidationError('lat', 'range')
-          trackSearchSubmit('latlng', `${latitude},${longitude}`, false)
           setLoading(false)
           return
         }
         
         if (lng < -180 || lng > 180) {
           setError('Longitude must be between -180 and 180')
-          trackValidationError('lng', 'range')
-          trackSearchSubmit('latlng', `${latitude},${longitude}`, false)
           setLoading(false)
           return
         }
         
-        trackSearchSubmit('latlng', `${latitude},${longitude}`, true)
         result = await getZoningByLatLng(lat, lng, city)
       }
 
@@ -88,16 +77,8 @@ export default function Search() {
     } catch (err) {
       if (err instanceof APIError) {
         setError(err.message)
-        // Track error with appropriate code
-        const errorCode = err.statusCode 
-          ? `HTTP_${err.statusCode}` 
-          : err.isNetworkError 
-            ? 'NETWORK_ERROR' 
-            : 'API_ERROR'
-        trackErrorShown('search', errorCode)
       } else {
         setError('An unexpected error occurred. Please try again.')
-        trackErrorShown('search', 'UNKNOWN_ERROR')
       }
     } finally {
       setLoading(false)
@@ -109,7 +90,7 @@ export default function Search() {
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Search Property</h1>
       
       <Card>
-        <form onSubmit={handleSubmit} className="space-y-6" noValidate data-testid="search-form">
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <Tabs
             value={searchType}
             onChange={(value) => setSearchType(value as SearchType)}
@@ -130,7 +111,6 @@ export default function Search() {
               required
               error={error && searchType === 'apn' ? error : undefined}
               aria-describedby="apn-help"
-              data-testid="search-input-apn"
             />
           ) : (
             <div className="space-y-4">
@@ -144,7 +124,6 @@ export default function Search() {
                 placeholder="30.2672"
                 required
                 error={error && searchType === 'location' ? error : undefined}
-                data-testid="search-input-latitude"
               />
               <Input
                 id="longitude"
@@ -155,20 +134,19 @@ export default function Search() {
                 onChange={(e) => setLongitude(e.target.value)}
                 placeholder="-97.7431"
                 required
-                data-testid="search-input-longitude"
               />
             </div>
           )}
 
           <div>
-            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="city" className="block text-sm font-medium text-text mb-2">
               City
             </label>
             <select
               id="city"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-2 bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               <option value="austin">Austin, TX</option>
             </select>
@@ -185,15 +163,14 @@ export default function Search() {
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg" role="alert" aria-live="assertive" aria-atomic="true" data-testid="search-error">
-              <p className="text-sm text-red-800 mb-3">{error}</p>
+            <div className="p-4 bg-primary-weak border border-danger rounded-2" role="alert" aria-live="assertive" aria-atomic="true">
+              <p className="text-sm text-danger mb-3">{error}</p>
               <Button
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
                 variant="secondary"
                 className="w-full"
-                data-testid="search-retry-button"
               >
                 Retry Search
               </Button>
@@ -204,7 +181,6 @@ export default function Search() {
             type="submit"
             disabled={loading}
             className="w-full"
-            data-testid="search-submit-button"
           >
             {loading ? 'Searching...' : 'Search'}
           </Button>

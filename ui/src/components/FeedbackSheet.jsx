@@ -2,9 +2,32 @@ import { useState, useEffect, useRef } from 'react'
 import Button from './Button'
 import Card from './Card'
 import Input from './Input'
+import { type ZoningAnswer } from '../engine/answers/rules'
+import { type CodeCitation } from '../engine/answers/rules'
 
-export default function FeedbackSheet({ answer, isOpen, onClose, onSubmit }) {
-  const [vote, setVote] = useState(null)
+interface FeedbackSheetProps {
+  answer: ZoningAnswer
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (feedback: FeedbackData) => void
+}
+
+interface FeedbackData {
+  answer_id: string
+  intent: string
+  district: string
+  vote: 'up' | 'down'
+  reason?: string
+  has_proposed: boolean
+  proposed?: {
+    value: number
+    unit: string
+    citation: CodeCitation
+  }
+}
+
+export default function FeedbackSheet({ answer, isOpen, onClose, onSubmit }: FeedbackSheetProps) {
+  const [vote, setVote] = useState<'up' | 'down' | null>(null)
   const [reason, setReason] = useState('')
   const [showProposal, setShowProposal] = useState(false)
   const [proposedValue, setProposedValue] = useState('')
@@ -42,8 +65,8 @@ export default function FeedbackSheet({ answer, isOpen, onClose, onSubmit }) {
       )
       if (!focusableElements || focusableElements.length === 0) return
 
-      const firstElement = focusableElements[0]
-      const lastElement = focusableElements[focusableElements.length - 1]
+      const firstElement = focusableElements[0] as HTMLElement
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -80,7 +103,7 @@ export default function FeedbackSheet({ answer, isOpen, onClose, onSubmit }) {
   const handleSubmit = () => {
     if (!vote) return
 
-    const feedback = {
+    const feedback: FeedbackData = {
       answer_id: answer.answer_id || `${answer.intent}`,
       intent: answer.intent,
       district: answer.answer_id?.split(':')[0] || '',

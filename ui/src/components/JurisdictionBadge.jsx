@@ -1,4 +1,10 @@
-export default function JurisdictionBadge({ jurisdiction }) {
+import { type JurisdictionEntry } from '../engine/juris/registry'
+
+interface JurisdictionBadgeProps {
+  jurisdiction: JurisdictionEntry | null
+}
+
+export default function JurisdictionBadge({ jurisdiction }: JurisdictionBadgeProps) {
   if (!jurisdiction) {
     return null
   }

@@ -1,5 +1,4 @@
 @import './print.css';
-@import './animations.css';
 @import '../design/tokens.css';
 
 @tailwind base;
@@ -38,15 +37,9 @@
 }
 
 @layer components {
-  /* Focus rings for accessibility - primary-800 outline + primary-300 inner */
+  /* Focus rings for accessibility */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
-  }
-  
-  /* Inner ring for better visibility using CSS variables */
-  .focus-ring:focus {
-    --tw-ring-color: var(--color-primary-800);
-    box-shadow: 0 0 0 2px var(--color-primary-300), 0 0 0 4px var(--color-primary-800);
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
 }
 

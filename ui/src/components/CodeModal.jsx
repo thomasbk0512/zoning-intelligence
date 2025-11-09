@@ -1,13 +1,21 @@
 import { useEffect, useRef } from 'react'
 import Button from './Button'
+import { type ZoningAnswer } from '../engine/answers/rules'
+import { type CitationWithVersion } from '../engine/answers/citations'
 import { getFullCitationText } from '../engine/answers/citations'
 
-export default function CodeModal({ answer, isOpen, onClose }) {
-  const modalRef = useRef(null)
-  const closeButtonRef = useRef(null)
+interface CodeModalProps {
+  answer: ZoningAnswer
+  isOpen: boolean
+  onClose: () => void
+}
+
+export default function CodeModal({ answer, isOpen, onClose }: CodeModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
 
   // Get version info from first citation if available
-  const firstCitation = answer.citations[0]
+  const firstCitation = answer.citations[0] as CitationWithVersion | undefined
   const version = firstCitation?.version
   const publishedAt = firstCitation?.published_at
   const codeId = firstCitation?.code_id
@@ -15,9 +23,9 @@ export default function CodeModal({ answer, isOpen, onClose }) {
   // Track citation opened
   useEffect(() => {
     if (isOpen && answer.citations.length > 0) {
-      const citation = answer.citations[0]
-      if (typeof window !== 'undefined' && window.__telem_track) {
-        window.__telem_track('citation_opened', {
+      const citation = answer.citations[0] as CitationWithVersion
+      if (typeof window !== 'undefined' && (window as any).__telem_track) {
+        ;(window as any).__telem_track('citation_opened', {
           code_id: citation.code_id,
           version: citation.version,
           jurisdiction_id: codeId?.includes('austin') ? 'austin' : codeId?.includes('travis') ? 'travis_etj' : undefined,
@@ -30,7 +38,7 @@ export default function CodeModal({ answer, isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) return
 
-    const handleTab = (e) => {
+    const handleTab = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return
 
       const focusableElements = modalRef.current?.querySelectorAll(
@@ -38,8 +46,8 @@ export default function CodeModal({ answer, isOpen, onClose }) {
       )
       if (!focusableElements || focusableElements.length === 0) return
 
-      const firstElement = focusableElements[0]
-      const lastElement = focusableElements[focusableElements.length - 1]
+      const firstElement = focusableElements[0] as HTMLElement
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -56,7 +64,7 @@ export default function CodeModal({ answer, isOpen, onClose }) {
 
     closeButtonRef.current?.focus()
 
-    const handleEsc = (e) => {
+    const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose()
       }

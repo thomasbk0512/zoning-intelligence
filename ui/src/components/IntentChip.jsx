@@ -1,49 +1,45 @@
-import { COPY } from '../copy/ui'
+import { type ParseResult } from '../engine/nlu/router'
 
-const intentLabels = {
-  front_setback: COPY.intent.front_setback,
-  side_setback: COPY.intent.side_setback,
-  rear_setback: COPY.intent.rear_setback,
-  max_height: COPY.intent.max_height,
-  lot_coverage: COPY.intent.lot_coverage,
-  min_lot_size: COPY.intent.min_lot_size,
+interface IntentChipProps {
+  intent: string
+  confidence?: number
+  onClick?: () => void
+  className?: string
 }
 
-export default function IntentChip({ intent, confidence, onClick, className = '' }) {
+const intentLabels: Record<string, string> = {
+  front_setback: 'Front Setback',
+  side_setback: 'Side Setback',
+  rear_setback: 'Rear Setback',
+  max_height: 'Max Height',
+  lot_coverage: 'Lot Coverage',
+  min_lot_size: 'Min Lot Size',
+}
+
+export default function IntentChip({ intent, confidence, onClick, className = '' }: IntentChipProps) {
   const label = intentLabels[intent] || intent.replace(/_/g, ' ')
   const displayConfidence = confidence !== undefined ? Math.round(confidence * 100) : undefined
 
   return (
-    <>
-      {/* Aria-live announcement for screen readers */}
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
-      >
-        {intent && `Intent detected: ${label}${displayConfidence ? ` with ${displayConfidence}% confidence` : ''}`}
-      </div>
-      
-      <button
-        onClick={onClick}
-        className={`
-          inline-flex items-center gap-2 px-3 py-1.5
-          text-sm font-medium
-          bg-primary-100 text-primary-800
-          rounded-full
-          hover:bg-primary-200
-          focus-ring
-          transition-colors
-          ${className}
-        `}
-        aria-label={`Intent: ${label}${displayConfidence ? ` (${displayConfidence}% confidence)` : ''}`}
-        title={displayConfidence !== undefined ? `${displayConfidence}% confidence` : undefined}
-      >
-        <span>{label}</span>
-        {/* No % shown in UI, only in title attribute */}
-      </button>
-    </>
+    <button
+      onClick={onClick}
+      className={`
+        inline-flex items-center gap-2 px-3 py-1.5
+        text-sm font-medium
+        bg-primary-100 text-primary-800
+        rounded-full
+        hover:bg-primary-200
+        focus-ring
+        transition-colors
+        ${className}
+      `}
+      aria-label={`Intent: ${label}${displayConfidence ? ` (${displayConfidence}% confidence)` : ''}`}
+    >
+      <span>{label}</span>
+      {displayConfidence !== undefined && (
+        <span className="text-xs opacity-75">{displayConfidence}%</span>
+      )}
+    </button>
   )
 }
 

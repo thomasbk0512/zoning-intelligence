@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import Button from './Button'
 import CodeModal from './CodeModal'
 import { formatTraceAsJSON, formatTraceAsMarkdown } from '../lib/traceFormat'
+import { type AnswerTrace } from '../engine/answers/trace'
+import { type ZoningAnswer } from '../engine/answers/rules'
 
-async function copyToClipboard(text) {
+async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text)
     return true
@@ -13,17 +15,24 @@ async function copyToClipboard(text) {
   }
 }
 
-export default function TraceModal({ answer, trace, isOpen, onClose }) {
-  const modalRef = useRef(null)
-  const closeButtonRef = useRef(null)
-  const [copiedFormat, setCopiedFormat] = useState(null)
-  const [selectedCitation, setSelectedCitation] = useState(null)
+interface TraceModalProps {
+  answer: ZoningAnswer
+  trace: AnswerTrace
+  isOpen: boolean
+  onClose: () => void
+}
+
+export default function TraceModal({ answer, trace, isOpen, onClose }: TraceModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const [copiedFormat, setCopiedFormat] = useState<'json' | 'md' | null>(null)
+  const [selectedCitation, setSelectedCitation] = useState<any>(null)
   const [codeModalOpen, setCodeModalOpen] = useState(false)
 
   // Track trace opened
   useEffect(() => {
-    if (isOpen && typeof window !== 'undefined' && window.__telem_track) {
-      window.__telem_track('trace_opened', {
+    if (isOpen && typeof window !== 'undefined' && (window as any).__telem_track) {
+      ;(window as any).__telem_track('trace_opened', {
         intent: trace.intent,
         jurisdiction_id: trace.jurisdiction_id,
         district: trace.district,
@@ -43,8 +52,8 @@ export default function TraceModal({ answer, trace, isOpen, onClose }) {
       )
       if (!focusableElements || focusableElements.length === 0) return
 
-      const firstElement = focusableElements[0]
-      const lastElement = focusableElements[focusableElements.length - 1]
+      const firstElement = focusableElements[0] as HTMLElement
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -84,8 +93,8 @@ export default function TraceModal({ answer, trace, isOpen, onClose }) {
       setTimeout(() => setCopiedFormat(null), 2000)
       
       // Track telemetry
-      if (typeof window !== 'undefined' && window.__telem_track) {
-        window.__telem_track('trace_copied', {
+      if (typeof window !== 'undefined' && (window as any).__telem_track) {
+        ;(window as any).__telem_track('trace_copied', {
           format: 'json',
         })
       }
@@ -100,15 +109,15 @@ export default function TraceModal({ answer, trace, isOpen, onClose }) {
       setTimeout(() => setCopiedFormat(null), 2000)
       
       // Track telemetry
-      if (typeof window !== 'undefined' && window.__telem_track) {
-        window.__telem_track('trace_copied', {
+      if (typeof window !== 'undefined' && (window as any).__telem_track) {
+        ;(window as any).__telem_track('trace_copied', {
           format: 'md',
         })
       }
     }
   }
 
-  const handleViewCode = (citation) => {
+  const handleViewCode = (citation: any) => {
     setSelectedCitation(citation)
     setCodeModalOpen(true)
   }

@@ -2,10 +2,22 @@ import { useState } from 'react'
 import Card from './Card'
 import Button from './Button'
 import CodeModal from './CodeModal'
+import { type ZoningAnswer } from '../engine/answers/rules'
 
-export default function ConflictNotice({ answer, conflictSources }) {
+interface ConflictNoticeProps {
+  answer: ZoningAnswer
+  conflictSources?: Array<{
+    type: string
+    id?: string
+    value: number
+    unit: string
+    citations: Array<{ code_id: string; section: string; anchor?: string }>
+  }>
+}
+
+export default function ConflictNotice({ answer, conflictSources }: ConflictNoticeProps) {
   const [codeModalOpen, setCodeModalOpen] = useState(false)
-  const [selectedCitation, setSelectedCitation] = useState(null)
+  const [selectedCitation, setSelectedCitation] = useState<any>(null)
 
   if (!conflictSources || conflictSources.length === 0) {
     return null
@@ -13,7 +25,7 @@ export default function ConflictNotice({ answer, conflictSources }) {
 
   const intentLabel = answer.intent.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 
-  const handleViewCode = (citation) => {
+  const handleViewCode = (citation: any) => {
     setSelectedCitation(citation)
     setCodeModalOpen(true)
   }

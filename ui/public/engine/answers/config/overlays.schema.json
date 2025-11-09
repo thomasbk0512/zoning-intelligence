@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "name", "applies_to", "op", "value", "unit", "citations"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique overlay identifier, e.g., 'HD'"
+      },
+      "name": {
+        "type": "string",
+        "description": "Human-readable name, e.g., 'Historic District'"
+      },
+      "applies_to": {
+        "type": "array",
+        "items": {
+          "enum": ["front_setback", "side_setback", "rear_setback", "max_height", "lot_coverage", "min_lot_size"]
+        },
+        "description": "Intents this overlay affects"
+      },
+      "op": {
+        "enum": ["max", "min", "add", "replace"],
+        "description": "Operation: max/min constrain, add offsets, replace value"
+      },
+      "value": {
+        "type": "number",
+        "description": "Adjustment value"
+      },
+      "unit": {
+        "type": "string",
+        "maxLength": 12,
+        "description": "Unit (must match intent unit)"
+      },
+      "citations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["code_id", "section", "anchor"],
+          "properties": {
+            "code_id": { "type": "string" },
+            "section": { "type": "string" },
+            "anchor": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "minItems": 1,
+        "description": "Code citations for this overlay adjustment"
+      }
+    },
+    "additionalProperties": false
+  }
+}
+

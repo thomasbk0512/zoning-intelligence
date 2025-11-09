@@ -159,6 +159,32 @@ try {
           },
         ],
       },
+      answerResolvedEvent: {
+        allOf: [
+          { $ref: '#/definitions/baseEvent' },
+          {
+            type: 'object',
+            required: ['event_type', 'intents', 'via', 'conflict'],
+            properties: {
+              event_type: { const: 'answer_resolved' },
+              intents: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+              via: { enum: ['rule', 'overlay', 'exception', 'override', 'needs_review'] },
+              conflict: { type: 'boolean' },
+              overlay_ids: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+              exception_ids: {
+                type: 'array',
+                items: { type: 'string' },
+              },
+            },
+          },
+        ],
+      },
     },
     oneOf: [
       { $ref: '#/definitions/pageViewEvent' },
@@ -168,6 +194,7 @@ try {
       { $ref: '#/definitions/errorShownEvent' },
       { $ref: '#/definitions/webVitalsEvent' },
       { $ref: '#/definitions/answerFeedbackEvent' },
+      { $ref: '#/definitions/answerResolvedEvent' },
     ],
   }
 } catch (error) {

@@ -104,15 +104,6 @@ export interface AnswerResolvedEvent extends BaseEvent {
   conflict?: boolean
 }
 
-export interface AnswerResolvedEvent extends BaseEvent {
-  event_type: 'answer_resolved'
-  intents: string[] // Array of intent names
-  via: 'rule' | 'overlay' | 'exception' | 'override' | 'needs_review'
-  conflict: boolean
-  overlay_ids?: string[] // If via='overlay'
-  exception_ids?: string[] // If via='exception'
-}
-
 /**
  * JSON Schema for validation
  */

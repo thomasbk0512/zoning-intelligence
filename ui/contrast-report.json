@@ -1,8 +1,8 @@
 {
-  "timestamp": "2025-11-09T15:07:04.155Z",
+  "timestamp": "2025-11-09T15:07:20.698Z",
   "pairs_checked": 16,
   "failures": 1,
-  "min_ratio_found": "1.47",
+  "min_ratio_found": "2.54",
   "results": [
     {
       "name": "Body text on white",
@@ -94,9 +94,9 @@
     },
     {
       "name": "Input border",
-      "text": "#D1D5DB",
+      "text": "#9CA3AF",
       "bg": "#FFFFFF",
-      "ratio": "1.47",
+      "ratio": "2.54",
       "required": 3,
       "pass": false
     },

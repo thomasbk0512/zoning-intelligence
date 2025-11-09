@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { CitationWithVersion } from '../engine/answers/citations'
+import { type CitationWithVersion } from '../engine/answers/citations'
 
 interface VersionNoticeProps {
   citations: CitationWithVersion[]

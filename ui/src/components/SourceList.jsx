@@ -1,5 +1,5 @@
 import { getCitationUrl, formatCitation, getFullCitationText, type CitationWithVersion } from '../engine/answers/citations'
-import type { CodeCitation } from '../engine/answers/rules'
+import { type CodeCitation } from '../engine/answers/rules'
 
 interface SourceListProps {
   citations: (CodeCitation | CitationWithVersion)[]

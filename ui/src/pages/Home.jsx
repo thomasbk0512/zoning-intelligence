@@ -5,7 +5,7 @@ import Card from '../components/Card'
 import IntentChip from '../components/IntentChip'
 import { parseQuery } from '../engine/nlu/router'
 import { getZoningByAPN, getZoningByLatLng, APIError } from '../lib/api'
-import type { ZoningResult } from '../types'
+import { type ZoningResult } from '../types'
 
 const exampleQueries = [
   'how tall can I build in SF-3 APN 0204050712',

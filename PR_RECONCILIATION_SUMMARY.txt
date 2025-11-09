@@ -1,0 +1,48 @@
+36: v1.6.0: Answer Cards & Citations (Austin)
+  Branch: answers/v1.6.0-austin
+  Mergeable: MERGEABLE
+  Status: BLOCKED
+  URL: https://github.com/thomasbk0512/zoning-intelligence/pull/36
+
+37: v1.6.1: Answer Cards Review Loop
+  Branch: answers/review-1.6.1
+  Mergeable: MERGEABLE
+  Status: BLOCKED
+  URL: https://github.com/thomasbk0512/zoning-intelligence/pull/37
+
+38: v1.6.2: Austin Overlays & Exceptions Resolver
+  Branch: answers/overlays-1.6.2
+  Mergeable: MERGEABLE
+  Status: BLOCKED
+  URL: https://github.com/thomasbk0512/zoning-intelligence/pull/38
+
+39: v1.6.3: Multi-Jurisdiction (ETJ pilot)
+  Branch: answers/juris-1.6.3
+  Mergeable: MERGEABLE
+  Status: BLOCKED
+  URL: https://github.com/thomasbk0512/zoning-intelligence/pull/39
+
+40: v1.6.4: Citation Integrity & Versioning
+  Branch: citations/versioning-1.6.4
+  Mergeable: MERGEABLE
+  Status: BLOCKED
+  URL: https://github.com/thomasbk0512/zoning-intelligence/pull/40
+
+41: v1.6.5: Shareable Parcel Report
+  Branch: report/share-1.6.5
+  Mergeable: MERGEABLE
+  Status: BLOCKED
+  URL: https://github.com/thomasbk0512/zoning-intelligence/pull/41
+
+42: v1.6.6: Natural Language Query Router
+  Branch: nlu/router-1.6.6
+  Mergeable: MERGEABLE
+  Status: BLOCKED
+  URL: https://github.com/thomasbk0512/zoning-intelligence/pull/42
+
+43: v1.6.7: Answer Trace System
+  Branch: answers/trace-1.6.7
+  Mergeable: MERGEABLE
+  Status: BLOCKED
+  URL: https://github.com/thomasbk0512/zoning-intelligence/pull/43
+

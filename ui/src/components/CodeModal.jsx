@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import Button from './Button'
-import type { ZoningAnswer } from '../engine/answers/rules'
-import type { CitationWithVersion } from '../engine/answers/citations'
+import { type ZoningAnswer } from '../engine/answers/rules'
+import { type CitationWithVersion } from '../engine/answers/citations'
 import { getFullCitationText } from '../engine/answers/citations'
 
 interface CodeModalProps {

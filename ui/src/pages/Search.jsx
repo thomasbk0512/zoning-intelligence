@@ -8,7 +8,7 @@ import IntentChip from '../components/IntentChip'
 import ParsePreview from '../components/ParsePreview'
 import { parseQuery } from '../engine/nlu/router'
 import { getZoningByAPN, getZoningByLatLng, APIError } from '../lib/api'
-import type { ZoningResult, SearchType } from '../types'
+import { type ZoningResult, type SearchType } from '../types'
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams()

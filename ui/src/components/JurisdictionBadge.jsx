@@ -1,4 +1,4 @@
-import type { JurisdictionEntry } from '../engine/juris/registry'
+import { type JurisdictionEntry } from '../engine/juris/registry'
 
 interface JurisdictionBadgeProps {
   jurisdiction: JurisdictionEntry | null

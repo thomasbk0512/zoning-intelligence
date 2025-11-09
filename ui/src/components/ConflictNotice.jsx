@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Card from './Card'
 import Button from './Button'
 import CodeModal from './CodeModal'
-import type { ZoningAnswer } from '../engine/answers/rules'
+import { type ZoningAnswer } from '../engine/answers/rules'
 
 interface ConflictNoticeProps {
   answer: ZoningAnswer

@@ -4,7 +4,7 @@
  * Deterministic parser that maps natural language queries to Answer Card intents.
  */
 
-import patternsData from './patterns.en.json'
+import { patternsData } from './patterns'
 
 export type IntentMode = 'apn' | 'latlng' | 'none'
 

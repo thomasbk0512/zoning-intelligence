@@ -39,9 +39,13 @@ export async function getBuildInfo(): Promise<BuildInfo> {
       cachedBuildInfo = await response.json()
       return cachedBuildInfo || {}
     }
+    // If file doesn't exist (404), that's fine - build info is optional
+    // Silently return empty object
+    return {}
   } catch (error) {
-    // Build info is optional, fail gracefully
-    console.warn('Failed to load build info:', error)
+    // Build info is optional, fail silently
+    // Don't log errors for missing optional files
+    return {}
   }
 
   return {}

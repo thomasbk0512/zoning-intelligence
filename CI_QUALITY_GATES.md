@@ -41,6 +41,10 @@ All gates are **enabled by default** for PRs to `main` and tag builds.
 | **Answers Trace** | Traces validate, first step is rule, final_value matches card | ✅ Blocking |
 | **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
+## Preview Branch
+
+The `beta/answers-v1.6` preview branch includes all v1.6.x features for interactive testing. Preview builds are **non-blocking** and do not affect main branch CI gates. See `PREVIEW.md` for setup instructions.
+
 ## Enabling Quality Gates
 
 **Default**: All gates are **enabled by default** for PRs to `main` and tag builds.

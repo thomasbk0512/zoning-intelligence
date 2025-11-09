@@ -51,24 +51,35 @@ export default function SourcesFlyout({ sources, isOpen, onClose }: SourcesFlyou
     <div
       className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
       onClick={onClose}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          onClose()
+        }
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="sources-title"
     >
       <div
         ref={flyoutRef}
-        className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+        className="bg-bg rounded-3 shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto border border-border"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            e.stopPropagation()
+            onClose()
+          }
+        }}
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 id="sources-title" className="text-xl font-semibold">
+            <h2 id="sources-title" className="text-xl font-semibold text-text">
               Zoning Sources
             </h2>
             <button
               ref={firstFocusableRef}
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded"
+              className="text-text-muted hover:text-text focus-ring rounded-2"
               aria-label="Close sources"
             >
               ✕
@@ -77,20 +88,20 @@ export default function SourcesFlyout({ sources, isOpen, onClose }: SourcesFlyou
 
           <ul className="space-y-3">
             {sources.map((source, idx) => (
-              <li key={idx} className="border-b border-gray-200 pb-3 last:border-0">
+              <li key={idx} className="border-b border-border pb-3 last:border-0">
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="font-medium text-sm text-gray-700">
+                    <span className="font-medium text-sm text-text">
                       {source.type}:
                     </span>
-                    <span className="ml-2 text-sm text-gray-600">
+                    <span className="ml-2 text-sm text-text-muted">
                       {source.cite}
                     </span>
                   </div>
                   {source.cite.startsWith('§') && (
                     <a
                       href={`#section-${source.cite.replace(/[^a-zA-Z0-9]/g, '-')}`}
-                      className="text-primary-600 hover:text-primary-700 text-sm"
+                      className="text-primary hover:opacity-90 text-sm focus-ring rounded-2"
                       onClick={(e) => {
                         e.preventDefault()
                         // TODO: Link to code section

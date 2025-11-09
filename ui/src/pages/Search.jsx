@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Tabs from '../components/Tabs'
 import Input from '../components/Input'
@@ -7,9 +7,17 @@ import Card from '../components/Card'
 import { getZoningByAPN, getZoningByLatLng, APIError } from '../lib/api'
 import type { ZoningResult, SearchType } from '../types'
 
+interface ValidationErrors {
+  apn?: string
+  latitude?: string
+  longitude?: string
+}
+
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
+  const formRef = useRef<HTMLFormElement>(null)
+  const errorRef = useRef<HTMLDivElement>(null)
   
   const [searchType, setSearchType] = useState<SearchType>(
     (searchParams.get('type') as SearchType) || 'apn'
@@ -21,8 +29,9 @@ export default function Search() {
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({})
 
-  // Update URL params when inputs change
+  // Update URL params when inputs change (debounced)
   useEffect(() => {
     const params = new URLSearchParams()
     params.set('type', searchType)
@@ -33,47 +42,82 @@ export default function Search() {
     setSearchParams(params, { replace: true })
   }, [searchType, apn, latitude, longitude, city, setSearchParams])
 
+  // Focus management on error (WCAG 2.4.3)
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.focus()
+    }
+  }, [error])
+
+  // Validate inputs (WCAG 3.3.1, 3.3.2, 3.3.3)
+  const validateInputs = (): boolean => {
+    const errors: ValidationErrors = {}
+    
+    if (searchType === 'apn') {
+      if (!apn.trim()) {
+        errors.apn = 'APN is required. Please enter a valid Assessor\'s Parcel Number (e.g., 0204050712).'
+      } else if (!/^\d+$/.test(apn.trim())) {
+        errors.apn = 'APN must contain only digits. Example: 0204050712'
+      }
+    } else {
+      const lat = parseFloat(latitude)
+      const lng = parseFloat(longitude)
+      
+      if (!latitude.trim()) {
+        errors.latitude = 'Latitude is required. Enter a value between -90 and 90 (e.g., 30.2672).'
+      } else if (isNaN(lat)) {
+        errors.latitude = 'Latitude must be a valid number. Example: 30.2672'
+      } else if (lat < -90 || lat > 90) {
+        errors.latitude = 'Latitude must be between -90 and 90. Example: 30.2672'
+      }
+      
+      if (!longitude.trim()) {
+        errors.longitude = 'Longitude is required. Enter a value between -180 and 180 (e.g., -97.7431).'
+      } else if (isNaN(lng)) {
+        errors.longitude = 'Longitude must be a valid number. Example: -97.7431'
+      } else if (lng < -180 || lng > 180) {
+        errors.longitude = 'Longitude must be between -180 and 180. Example: -97.7431'
+      }
+    }
+    
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setValidationErrors({})
+    
+    if (!validateInputs()) {
+      return
+    }
+    
     setLoading(true)
 
     try {
       let result: ZoningResult
 
       if (searchType === 'apn') {
-        if (!apn.trim()) {
-          setError('APN is required')
-          setLoading(false)
-          return
-        }
         result = await getZoningByAPN(apn.trim(), city)
       } else {
         const lat = parseFloat(latitude)
         const lng = parseFloat(longitude)
-        
-        if (isNaN(lat) || isNaN(lng)) {
-          setError('Valid latitude and longitude are required')
-          setLoading(false)
-          return
-        }
-        
-        if (lat < -90 || lat > 90) {
-          setError('Latitude must be between -90 and 90')
-          setLoading(false)
-          return
-        }
-        
-        if (lng < -180 || lng > 180) {
-          setError('Longitude must be between -180 and 180')
-          setLoading(false)
-          return
-        }
-        
         result = await getZoningByLatLng(lat, lng, city)
       }
 
-      navigate('/results', { state: { result } })
+      // Navigate with query params for deep linking
+      const params = new URLSearchParams()
+      params.set('type', searchType)
+      if (searchType === 'apn') {
+        params.set('apn', apn.trim())
+      } else {
+        params.set('lat', latitude)
+        params.set('lng', longitude)
+      }
+      params.set('city', city)
+      
+      navigate(`/results?${params.toString()}`, { state: { result } })
     } catch (err) {
       if (err instanceof APIError) {
         setError(err.message)
@@ -87,13 +131,17 @@ export default function Search() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Search Property</h1>
+      <h1 className="text-2xl sm:text-3xl font-semibold text-text mb-6 sm:mb-8">Search Property</h1>
       
       <Card>
-        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-6" noValidate>
           <Tabs
             value={searchType}
-            onChange={(value) => setSearchType(value as SearchType)}
+            onChange={(value) => {
+              setSearchType(value as SearchType)
+              setError(null)
+              setValidationErrors({})
+            }}
             tabs={[
               { value: 'apn', label: 'APN' },
               { value: 'location', label: 'Location (Lat/Lng)' },
@@ -105,11 +153,18 @@ export default function Search() {
               id="apn"
               label="APN"
               type="text"
+              inputMode="numeric"
+              autoComplete="off"
               value={apn}
-              onChange={(e) => setApn(e.target.value)}
+              onChange={(e) => {
+                setApn(e.target.value)
+                if (validationErrors.apn) {
+                  setValidationErrors({ ...validationErrors, apn: undefined })
+                }
+              }}
               placeholder="0204050712"
               required
-              error={error && searchType === 'apn' ? error : undefined}
+              error={validationErrors.apn || (error && searchType === 'apn' ? error : undefined)}
               aria-describedby="apn-help"
             />
           ) : (
@@ -119,34 +174,47 @@ export default function Search() {
                 label="Latitude"
                 type="number"
                 step="any"
+                autoComplete="off"
                 value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
+                onChange={(e) => {
+                  setLatitude(e.target.value)
+                  if (validationErrors.latitude) {
+                    setValidationErrors({ ...validationErrors, latitude: undefined })
+                  }
+                }}
                 placeholder="30.2672"
                 required
-                error={error && searchType === 'location' ? error : undefined}
+                error={validationErrors.latitude}
               />
               <Input
                 id="longitude"
                 label="Longitude"
                 type="number"
                 step="any"
+                autoComplete="off"
                 value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
+                onChange={(e) => {
+                  setLongitude(e.target.value)
+                  if (validationErrors.longitude) {
+                    setValidationErrors({ ...validationErrors, longitude: undefined })
+                  }
+                }}
                 placeholder="-97.7431"
                 required
+                error={validationErrors.longitude || (error && searchType === 'location' ? error : undefined)}
               />
             </div>
           )}
 
           <div>
-            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="city" className="block text-sm font-medium text-text mb-2">
               City
             </label>
             <select
               id="city"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-2 bg-bg text-text focus-ring"
             >
               <option value="austin">Austin, TX</option>
             </select>
@@ -162,9 +230,16 @@ export default function Search() {
             {loading ? 'Searching for property...' : error ? `Error: ${error}` : 'Ready to search'}
           </div>
 
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg" role="alert" aria-live="assertive" aria-atomic="true">
-              <p className="text-sm text-red-800 mb-3">{error}</p>
+          {error && !validationErrors.apn && !validationErrors.latitude && !validationErrors.longitude && (
+            <div 
+              ref={errorRef}
+              className="p-4 bg-primary-weak border border-danger rounded-2" 
+              role="alert" 
+              aria-live="assertive" 
+              aria-atomic="true"
+              tabIndex={-1}
+            >
+              <p className="text-sm text-danger mb-3">{error}</p>
               <Button
                 type="button"
                 onClick={handleSubmit}
@@ -189,4 +264,3 @@ export default function Search() {
     </div>
   )
 }
-

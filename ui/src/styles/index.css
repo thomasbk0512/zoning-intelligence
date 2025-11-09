@@ -1,4 +1,5 @@
 @import './print.css';
+@import '../design/tokens.css';
 
 @tailwind base;
 @tailwind components;
@@ -6,7 +7,8 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-surface text-text;
+    font-family: var(--font-family);
   }
   
   /* Screen reader only class */
@@ -22,6 +24,19 @@
     border-width: 0;
   }
   
+  /* Skip to content link */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50;
+    @apply focus:px-4 focus:py-2 focus:bg-primary focus:text-bg;
+    @apply focus:rounded-2 focus:font-medium focus:shadow-md;
+  }
+  
+  /* Focus visible styles - WCAG 2.4.7 */
+  *:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+  
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -32,12 +47,19 @@
       transition-duration: 0.01ms !important;
     }
   }
+  
+  /* Text spacing - WCAG 1.4.12 */
+  .text-spacing-test {
+    line-height: 1.5 !important;
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.16em !important;
+  }
 }
 
 @layer components {
-  /* Focus rings for accessibility */
+  /* Focus rings for accessibility - tokenized */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply focus:outline-none focus-visible:outline-2 focus-visible:outline-focus-ring focus-visible:outline-offset-2;
   }
 }
 

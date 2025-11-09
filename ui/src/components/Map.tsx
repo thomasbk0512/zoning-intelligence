@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import type { ZoningResult } from '../types'
+import type { Geometry } from 'geojson'
 
 interface MapProps {
   result: ZoningResult
-  parcelGeometry?: GeoJSON.Geometry
-  zoningGeometry?: GeoJSON.Geometry
+  parcelGeometry?: Geometry
+  zoningGeometry?: Geometry
 }
 
 export default function Map({ result, parcelGeometry, zoningGeometry }: MapProps) {
@@ -94,7 +95,7 @@ export default function Map({ result, parcelGeometry, zoningGeometry }: MapProps
 
     // Fit bounds to parcel
     const bounds = new maplibregl.LngLatBounds()
-    const coords = (parcelGeometry as GeoJSON.Polygon).coordinates[0]
+    const coords = (parcelGeometry as { type: 'Polygon'; coordinates: number[][][] }).coordinates[0]
     coords.forEach((coord: number[]) => {
       bounds.extend([coord[0], coord[1]])
     })
@@ -165,7 +166,7 @@ export default function Map({ result, parcelGeometry, zoningGeometry }: MapProps
     <div className="space-y-4">
       {/* Overlay toggle panel */}
       <div 
-        className="bg-white p-4 rounded-lg border border-gray-200"
+        className="bg-bg p-4 rounded-3 border border-border"
         role="group"
         aria-label="Map overlay controls"
       >
@@ -176,20 +177,20 @@ export default function Map({ result, parcelGeometry, zoningGeometry }: MapProps
               type="checkbox"
               checked={showParcel}
               onChange={(e) => setShowParcel(e.target.checked)}
-              className="mr-2 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              className="mr-2 h-4 w-4 text-primary focus-ring border-border rounded-2"
               aria-label="Toggle parcel boundary overlay"
             />
-            <span className="text-sm text-gray-700">Parcel Boundary</span>
+            <span className="text-sm text-text">Parcel Boundary</span>
           </label>
           <label className="flex items-center cursor-pointer">
             <input
               type="checkbox"
               checked={showZoning}
               onChange={(e) => setShowZoning(e.target.checked)}
-              className="mr-2 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              className="mr-2 h-4 w-4 text-primary focus-ring border-border rounded-2"
               aria-label="Toggle zoning district overlay"
             />
-            <span className="text-sm text-gray-700">Zoning District ({result.zone})</span>
+            <span className="text-sm text-text">Zoning District ({result.zone})</span>
           </label>
         </div>
       </div>
@@ -197,7 +198,7 @@ export default function Map({ result, parcelGeometry, zoningGeometry }: MapProps
       {/* Map container */}
       <div
         ref={mapContainer}
-        className="w-full h-96 rounded-lg border border-gray-200"
+        className="w-full h-96 rounded-3 border border-border"
         role="img"
         aria-label={`Map showing parcel ${result.apn} in zone ${result.zone}`}
         aria-describedby="map-description"

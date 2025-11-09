@@ -1,0 +1,136 @@
+{
+  "timestamp": "2025-11-09T15:06:46.923Z",
+  "pairs_checked": 16,
+  "failures": 3,
+  "min_ratio_found": "1.24",
+  "results": [
+    {
+      "name": "Body text on white",
+      "text": "#0B1221",
+      "bg": "#FFFFFF",
+      "ratio": "18.70",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Body text on surface",
+      "text": "#0B1221",
+      "bg": "#F8FAFC",
+      "ratio": "17.88",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Muted text on white",
+      "text": "#475467",
+      "bg": "#FFFFFF",
+      "ratio": "7.69",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Muted text on surface",
+      "text": "#475467",
+      "bg": "#F8FAFC",
+      "ratio": "7.35",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Primary button text",
+      "text": "#FFFFFF",
+      "bg": "#3538CD",
+      "ratio": "8.08",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Secondary button text",
+      "text": "#0B1221",
+      "bg": "#F8FAFC",
+      "ratio": "17.88",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Link on white",
+      "text": "#3538CD",
+      "bg": "#FFFFFF",
+      "ratio": "8.08",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Link on surface",
+      "text": "#3538CD",
+      "bg": "#F8FAFC",
+      "ratio": "7.72",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Heading on white",
+      "text": "#0B1221",
+      "bg": "#FFFFFF",
+      "ratio": "18.70",
+      "required": 3,
+      "pass": true
+    },
+    {
+      "name": "Heading on surface",
+      "text": "#0B1221",
+      "bg": "#F8FAFC",
+      "ratio": "17.88",
+      "required": 3,
+      "pass": true
+    },
+    {
+      "name": "Input text on white",
+      "text": "#0B1221",
+      "bg": "#FFFFFF",
+      "ratio": "18.70",
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "name": "Input border",
+      "text": "#E5E7EB",
+      "bg": "#FFFFFF",
+      "ratio": "1.24",
+      "required": 3,
+      "pass": false
+    },
+    {
+      "name": "Focus ring on white",
+      "text": "#3538CD",
+      "bg": "#FFFFFF",
+      "ratio": "8.08",
+      "required": 3,
+      "pass": true
+    },
+    {
+      "name": "Focus ring on surface",
+      "text": "#3538CD",
+      "bg": "#F8FAFC",
+      "ratio": "7.72",
+      "required": 3,
+      "pass": true
+    },
+    {
+      "name": "Error text on white",
+      "text": "#EF4444",
+      "bg": "#FFFFFF",
+      "ratio": "3.76",
+      "required": 4.5,
+      "pass": false
+    },
+    {
+      "name": "Error text on surface",
+      "text": "#EF4444",
+      "bg": "#F8FAFC",
+      "ratio": "3.60",
+      "required": 4.5,
+      "pass": false
+    }
+  ]
+}

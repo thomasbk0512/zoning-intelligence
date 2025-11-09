@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useRef } from 'react'
 
 interface LayoutProps {
   children: ReactNode
@@ -7,15 +7,35 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  const mainRef = useRef<HTMLElement>(null)
+  
+  // Focus management on route change (WCAG 2.4.3)
+  useEffect(() => {
+    if (mainRef.current) {
+      // Skip focus if user is interacting with form inputs
+      const activeElement = document.activeElement
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'SELECT')) {
+        return
+      }
+      // Focus main landmark for screen readers
+      mainRef.current.focus()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
   
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-white shadow-sm">
+      {/* Skip to content link - WCAG 2.4.1 */}
+      <a href="#main" className="skip-link">
+        Skip to main content
+      </a>
+      
+      <header className="bg-bg shadow-sm border-b border-border" role="banner">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <Link 
               to="/" 
-              className="text-xl sm:text-2xl font-bold text-primary-600 focus-ring rounded"
+              className="text-xl sm:text-2xl font-semibold text-primary focus-ring rounded-2"
               aria-label="Zoning Intelligence Home"
             >
               Zoning Intelligence
@@ -23,21 +43,23 @@ export default function Layout({ children }: LayoutProps) {
             <nav className="space-x-4" aria-label="Main navigation">
               <Link 
                 to="/" 
-                className={`text-sm sm:text-base transition-colors focus-ring rounded ${
+                className={`text-sm sm:text-base transition-colors focus-ring rounded-2 ${
                   location.pathname === '/' 
-                    ? 'text-primary-600 font-medium' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary font-medium' 
+                    : 'text-text-muted hover:text-primary'
                 }`}
+                aria-current={location.pathname === '/' ? 'page' : undefined}
               >
                 Home
               </Link>
               <Link 
                 to="/search" 
-                className={`text-sm sm:text-base transition-colors focus-ring rounded ${
+                className={`text-sm sm:text-base transition-colors focus-ring rounded-2 ${
                   location.pathname === '/search' 
-                    ? 'text-primary-600 font-medium' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary font-medium' 
+                    : 'text-text-muted hover:text-primary'
                 }`}
+                aria-current={location.pathname === '/search' ? 'page' : undefined}
               >
                 Search
               </Link>
@@ -46,13 +68,20 @@ export default function Layout({ children }: LayoutProps) {
         </div>
       </header>
       
-      <main className="flex-grow" role="main">
+      <main 
+        id="main"
+        ref={mainRef}
+        className="flex-grow" 
+        role="main"
+        tabIndex={-1}
+        aria-label="Main content"
+      >
         {children}
       </main>
       
-      <footer className="bg-gray-800 text-white py-4">
+      <footer className="bg-surface border-t border-border py-4" role="contentinfo">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm">&copy; 2024 Zoning Intelligence. v1.0.0</p>
+          <p className="text-sm text-text-muted">&copy; 2024 Zoning Intelligence. v1.0.0</p>
         </div>
       </footer>
     </div>

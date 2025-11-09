@@ -7,8 +7,8 @@ interface KeyValueProps {
 export default function KeyValue({ label, value, className = '' }: KeyValueProps) {
   return (
     <div className={className}>
-      <p className="text-sm text-gray-600">{label}</p>
-      <p className="text-lg font-medium">{value}</p>
+      <dt className="text-sm font-medium text-text-muted">{label}</dt>
+      <dd className="mt-1 text-sm text-text">{value}</dd>
     </div>
   )
 }

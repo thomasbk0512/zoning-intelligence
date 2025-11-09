@@ -237,6 +237,16 @@ To make quality gates blocking:
 - ✅ CI uploads telemetry.ndjson artifact
 - ✅ No performance regression (Lighthouse budgets maintained)
 - ✅ Feedback events (`answer_feedback`) validated if present
+- ✅ Citation events (`citation_opened`) include version and jurisdiction_id fields
+
+## Citations Integrity Gate Criteria
+
+- ✅ All manifest files validate against schema (AJV)
+- ✅ All anchor files validate against schema (AJV)
+- ✅ Manifest hash matches computed hash of anchors file
+- ✅ All citations referenced in rules/overlays/exceptions exist in anchors
+- ✅ Stale anchor detection works (simulated in CI)
+- ✅ Version info attached to citations correctly
 
 ## Related Issues
 

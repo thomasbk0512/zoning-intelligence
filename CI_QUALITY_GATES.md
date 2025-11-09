@@ -18,6 +18,11 @@ Both jobs are **disabled by default** and can be enabled via repository variable
    - `E2E_ENABLE` = `true` (to enable E2E tests)
    - `LH_ENABLE` = `true` (to enable Lighthouse CI)
 
+**Quick Enable**:
+- Settings → Secrets and variables → Actions → Variables → New repository variable
+- Name: `E2E_ENABLE`, Value: `true` (repeat for `LH_ENABLE`)
+- CI will show "SKIPPED (flag=false)" when disabled
+
 ### Via Workflow Dispatch (Future)
 
 Workflows can be triggered manually with these flags set.

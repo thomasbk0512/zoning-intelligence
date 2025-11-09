@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react'
 import { loadSnapshot } from '../engine/citations/snapshot'
 
-interface ReportFooterProps {
-  jurisdictionId?: string
-  className?: string
-}
-
-export default function ReportFooter({ jurisdictionId = 'austin', className = '' }: ReportFooterProps) {
-  const [manifestInfo, setManifestInfo] = useState<any>(null)
+export default function ReportFooter({ jurisdictionId = 'austin', className = '' }) {
+  const [manifestInfo, setManifestInfo] = useState(null)
 
   useEffect(() => {
     loadSnapshot(jurisdictionId).then(snapshot => {
@@ -34,7 +29,7 @@ export default function ReportFooter({ jurisdictionId = 'austin', className = ''
         <div className="metadata mt-4">
           <p className="font-semibold mb-1">Code Sources</p>
           <div className="text-xs space-y-1">
-            {manifestInfo.sources.map((source: any, index: number) => (
+            {manifestInfo.sources.map((source, index) => (
               <div key={index}>
                 {source.name}: Version {manifestInfo.version} (Published: {manifestInfo.published_at})
               </div>

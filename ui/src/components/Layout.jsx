@@ -1,12 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
-import { ReactNode } from 'react'
 import { usePageViewTracking } from '../hooks/useTelemetry'
+import ScopeBar from './ScopeBar'
 
-interface LayoutProps {
-  children: ReactNode
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children }) {
   const location = useLocation()
   usePageViewTracking() // Track page views on route changes
   
@@ -17,7 +13,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex justify-between items-center py-4">
             <Link 
               to="/" 
-              className="text-xl sm:text-2xl font-semibold text-primary focus-ring rounded-2"
+              className="text-xl sm:text-2xl font-semibold text-primary-600 focus-ring rounded-2"
               aria-label="Zoning Intelligence Home"
             >
               Zoning Intelligence
@@ -27,8 +23,8 @@ export default function Layout({ children }: LayoutProps) {
                 to="/" 
                 className={`text-sm sm:text-base transition-colors focus-ring rounded-2 ${
                   location.pathname === '/' 
-                    ? 'text-primary font-medium' 
-                    : 'text-text-muted hover:text-primary'
+                    ? 'text-primary-600 font-medium' 
+                    : 'text-text-muted hover:text-primary-700'
                 }`}
               >
                 Home
@@ -37,8 +33,8 @@ export default function Layout({ children }: LayoutProps) {
                 to="/search" 
                 className={`text-sm sm:text-base transition-colors focus-ring rounded-2 ${
                   location.pathname === '/search' 
-                    ? 'text-primary font-medium' 
-                    : 'text-text-muted hover:text-primary'
+                    ? 'text-primary-600 font-medium' 
+                    : 'text-text-muted hover:text-primary-700'
                 }`}
               >
                 Search
@@ -46,6 +42,7 @@ export default function Layout({ children }: LayoutProps) {
             </nav>
           </div>
         </div>
+        <ScopeBar />
       </header>
       
       <main className="flex-grow" role="main">

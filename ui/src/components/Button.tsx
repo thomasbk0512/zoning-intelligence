@@ -11,10 +11,10 @@ export default function Button({
   className = '',
   ...props 
 }: ButtonProps) {
-  const baseClasses = 'px-4 py-2 rounded-2 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+  const baseClasses = 'px-4 py-2.5 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-sm'
   const variantClasses = variant === 'primary' 
-    ? 'bg-primary text-bg hover:opacity-90 focus:ring-primary' 
-    : 'bg-surface text-text border border-border hover:bg-primary-weak focus:ring-primary'
+    ? 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 focus:ring-primary-800 shadow-sm hover:shadow-md disabled:hover:bg-primary-600' 
+    : 'bg-white text-ink-900 border border-border hover:border-primary-300 hover:bg-primary-50 active:bg-primary-100 focus:ring-primary-800 shadow-sm hover:shadow-md disabled:hover:bg-white'
   
   return (
     <button 

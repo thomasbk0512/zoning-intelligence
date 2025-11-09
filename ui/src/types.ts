@@ -32,5 +32,5 @@ export interface SearchParams {
   city: string
 }
 
-export type SearchType = 'apn' | 'location'
+export type SearchType = 'apn' | 'location' | 'nlq'
 

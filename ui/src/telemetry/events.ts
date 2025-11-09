@@ -21,6 +21,7 @@ export type TelemetryEvent =
   | JurisdictionResolvedEvent
   | ReportGeneratedEvent
   | ReportSharedEvent
+  | IntentDetectedEvent
 
 export interface BaseEvent {
   event_type: string
@@ -126,6 +127,13 @@ export interface ReportGeneratedEvent extends BaseEvent {
 export interface ReportSharedEvent extends BaseEvent {
   event_type: 'report_shared'
   method: 'link' | 'print'
+}
+
+export interface IntentDetectedEvent extends BaseEvent {
+  event_type: 'intent_detected'
+  intent: string
+  confidence: number
+  mode: 'apn' | 'latlng' | 'none'
 }
 
 /**

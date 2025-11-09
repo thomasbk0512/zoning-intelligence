@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import Tabs from '../components/Tabs'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import Card from '../components/Card'
+import IntentChip from '../components/IntentChip'
+import ParsePreview from '../components/ParsePreview'
+import { parseQuery } from '../engine/nlu/router'
 import { getZoningByAPN, getZoningByLatLng, APIError } from '../lib/api'
 import type { ZoningResult, SearchType } from '../types'
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
+  const location = useLocation()
   
   const [searchType, setSearchType] = useState<SearchType>(
     (searchParams.get('type') as SearchType) || 'apn'
@@ -19,8 +23,23 @@ export default function Search() {
   const [longitude, setLongitude] = useState(searchParams.get('lng') || '')
   const [city, setCity] = useState(searchParams.get('city') || 'austin')
   
+  const [nlq, setNlq] = useState('')
+  const [parse, setParse] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Handle prefill from Home page
+  useEffect(() => {
+    const state = location.state as any
+    if (state?.prefillIntent) {
+      setSearchType('nlq') // Default to NLQ tab
+      if (state.prefillQuery) {
+        setNlq(state.prefillQuery)
+        const result = parseQuery(state.prefillQuery)
+        setParse(result)
+      }
+    }
+  }, [location.state])
 
   // Update URL params when inputs change
   useEffect(() => {
@@ -85,20 +104,142 @@ export default function Search() {
     }
   }
 
+  const handleNlqChange = (value: string) => {
+    setNlq(value)
+    if (value.trim().length > 3) {
+      const result = parseQuery(value)
+      setParse(result)
+      
+      // Track telemetry
+      if (result.intent && typeof window !== 'undefined' && (window as any).__telem_track) {
+        ;(window as any).__telem_track('intent_detected', {
+          intent: result.intent,
+          confidence: result.confidence,
+          mode: result.mode,
+        })
+      }
+      
+      // Auto-fill form if locator detected
+      if (result.mode === 'apn' && result.params.apn) {
+        setApn(result.params.apn)
+        setSearchType('apn')
+      } else if (result.mode === 'latlng' && result.params.latitude && result.params.longitude) {
+        setLatitude(result.params.latitude.toString())
+        setLongitude(result.params.longitude.toString())
+        setSearchType('location')
+      }
+    } else {
+      setParse(null)
+    }
+  }
+
+  const handleNlqSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!nlq.trim() || !parse?.intent) return
+
+    setError(null)
+    setLoading(true)
+
+    try {
+      // High confidence + locator present → route directly
+      if (parse.confidence >= 0.7 && parse.mode !== 'none') {
+        let result: ZoningResult
+
+        if (parse.mode === 'apn' && parse.params.apn) {
+          result = await getZoningByAPN(parse.params.apn, city)
+        } else if (parse.mode === 'latlng' && parse.params.latitude && parse.params.longitude) {
+          result = await getZoningByLatLng(parse.params.latitude, parse.params.longitude, city)
+        } else {
+          // Fallback to form submission
+          await handleSubmit(e as any)
+          return
+        }
+
+        navigate('/results', { state: { result } })
+      } else {
+        // Low confidence or no locator → use form
+        await handleSubmit(e as any)
+      }
+    } catch (err) {
+      if (err instanceof APIError) {
+        setError(err.message)
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Search Property</h1>
       
       <Card>
-        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-          <Tabs
-            value={searchType}
-            onChange={(value) => setSearchType(value as SearchType)}
-            tabs={[
-              { value: 'apn', label: 'APN' },
-              { value: 'location', label: 'Location (Lat/Lng)' },
-            ]}
-          />
+        <Tabs
+          value={searchType}
+          onChange={(value) => setSearchType(value as SearchType)}
+          tabs={[
+            { value: 'nlq', label: 'Ask a Question' },
+            { value: 'apn', label: 'APN' },
+            { value: 'location', label: 'Location (Lat/Lng)' },
+          ]}
+        />
+
+        {searchType === 'nlq' ? (
+          <form onSubmit={handleNlqSubmit} className="space-y-6 mt-6" noValidate>
+            <div>
+              <label htmlFor="nlq" className="block text-sm font-medium text-text mb-2">
+                Ask a Question
+              </label>
+              <textarea
+                id="nlq"
+                value={nlq}
+                onChange={(e) => handleNlqChange(e.target.value)}
+                placeholder="e.g., 'how tall can I build in SF-3 APN 0204050712'"
+                className="w-full px-4 py-3 border border-border rounded-lg bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                rows={3}
+                aria-describedby="nlq-help"
+              />
+              <p id="nlq-help" className="mt-1 text-xs text-text-muted">
+                Ask about setbacks, height limits, lot coverage, or minimum lot size. Include an APN or coordinates.
+              </p>
+            </div>
+
+            {parse && (
+              <div className="space-y-3">
+                {parse.intent && (
+                  <div>
+                    <p className="text-sm font-medium text-text mb-2">Detected Intent:</p>
+                    <IntentChip intent={parse.intent} confidence={parse.confidence} />
+                  </div>
+                )}
+                <ParsePreview
+                  parse={parse}
+                  onSelectIntent={(intent) => {
+                    setParse({ ...parse, intent, needs_disambiguation: false })
+                  }}
+                  onConfirm={handleNlqSubmit}
+                />
+              </div>
+            )}
+
+            {error && (
+              <div className="p-4 bg-primary-weak border border-danger rounded-2" role="alert">
+                <p className="text-sm text-danger">{error}</p>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              disabled={loading || !parse?.intent}
+              className="w-full"
+            >
+              {loading ? 'Searching...' : 'Search'}
+            </Button>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6 mt-6" noValidate>
 
           {searchType === 'apn' ? (
             <Input
@@ -177,14 +318,15 @@ export default function Search() {
             </div>
           )}
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full"
-          >
-            {loading ? 'Searching...' : 'Search'}
-          </Button>
-        </form>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full"
+            >
+              {loading ? 'Searching...' : 'Search'}
+            </Button>
+          </form>
+        )}
       </Card>
     </div>
   )

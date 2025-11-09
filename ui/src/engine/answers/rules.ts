@@ -35,7 +35,10 @@ export interface ZoningAnswer {
 /**
  * Get answers for all intents for a given zone
  */
-export function getAnswersForZone(zone: string): ZoningAnswer[] {
+/**
+ * Get answers for a zone in a specific jurisdiction
+ */
+export function getAnswersForZone(zone: string, jurisdictionId: string = 'austin'): ZoningAnswer[] {
   const intents: ZoningIntent[] = [
     'front_setback',
     'side_setback',
@@ -56,8 +59,11 @@ export function getAnswerForIntent(zone: string, intent: ZoningIntent): ZoningAn
   const normalizedZone = zone.replace(/-/g, '').toUpperCase()
   const answerId = `${zone}:${intent}`
 
-  // Austin LDC rules (simplified for MVP)
-  const rules = getAustinRules(normalizedZone, intent)
+      // Get rules based on jurisdiction
+      const rules =
+        jurisdictionId === 'travis_etj'
+          ? getETJRules(normalizedZone, intent)
+          : getAustinRules(normalizedZone, intent)
 
   if (rules) {
     return {

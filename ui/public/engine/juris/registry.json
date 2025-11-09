@@ -1,0 +1,15 @@
+[
+  {
+    "id": "austin",
+    "name": "Austin",
+    "code_ids": ["austin_ldc_2024"],
+    "priority": 1
+  },
+  {
+    "id": "travis_etj",
+    "name": "Travis County ETJ",
+    "code_ids": ["travis_etj_ord_2024"],
+    "priority": 2
+  }
+]
+

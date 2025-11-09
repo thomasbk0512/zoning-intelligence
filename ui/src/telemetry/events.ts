@@ -18,6 +18,7 @@ export type TelemetryEvent =
   | CitationOpenedEvent
   | AnswerFeedbackEvent
   | AnswerResolvedEvent
+  | JurisdictionResolvedEvent
 
 export interface BaseEvent {
   event_type: string
@@ -102,6 +103,13 @@ export interface AnswerResolvedEvent extends BaseEvent {
   intents: string[]
   via: 'rule' | 'overlay' | 'exception' | 'override' | 'needs_review'
   conflict?: boolean
+}
+
+export interface JurisdictionResolvedEvent extends BaseEvent {
+  event_type: 'jurisdiction_resolved'
+  jurisdiction_id: string
+  resolver: 'apn' | 'latlng' | 'stub'
+  district: string
 }
 
 /**

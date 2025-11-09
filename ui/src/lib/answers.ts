@@ -59,17 +59,18 @@ export async function getAnswers(request: AnswersRequest): Promise<AnswersRespon
   const shouldApplyOverrides = request.applyOverrides !== false
   if (shouldApplyOverrides) {
     const overrides = await loadOverrides()
-    answers = await Promise.all(
-      answers.map(answer =>
-        mergeWithOverrides(
-          answer,
-          overrides,
-          request.apn,
-          request.overlays ? { overlays: request.overlays } : undefined,
-          request.lotContext
+      answers = await Promise.all(
+        answers.map(answer =>
+          mergeWithOverrides(
+            answer,
+            overrides,
+            request.apn,
+            request.overlays ? { overlays: request.overlays } : undefined,
+            request.lotContext,
+            jurisdictionId
+          )
         )
       )
-    )
   }
 
   // Enrich citations with version info
@@ -110,9 +111,11 @@ async function getStubbedAnswers(zone: string): Promise<AnswersResponse> {
       
       // Apply overrides, overlays, and exceptions to stubbed answers (for CI/testing)
       const overrides = await loadOverrides()
+      // Determine jurisdiction from data or default to austin
+      const jurisdictionId = (data as any).jurisdiction === 'travis_etj' ? 'travis_etj' : 'austin'
       answers = await Promise.all(
         answers.map((answer: ZoningAnswer) =>
-          mergeWithOverrides(answer, overrides, undefined, undefined, undefined)
+          mergeWithOverrides(answer, overrides, undefined, undefined, undefined, jurisdictionId)
         )
       )
       

@@ -38,6 +38,7 @@ All gates are **enabled by default** for PRs to `main` and tag builds.
 | **Citations Integrity** | Manifests valid, anchors valid, hash matches, all citations resolved | ✅ Blocking |
 | **Report** | PDF generated, validated, permalink works, print layout A11y AA | ✅ Blocking |
 | **NLU Router** | Patterns valid, examples coverage ≥95%, E2E routes correctly | ✅ Blocking |
+| **Answers Trace** | Traces validate, first step is rule, final_value matches card | ✅ Blocking |
 | **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
 ## Enabling Quality Gates
@@ -268,6 +269,16 @@ To make quality gates blocking:
 - ✅ E2E happy path routes correctly (query → Results → Answer Cards)
 - ✅ Intent detection telemetry recorded (intent_detected events)
 - ✅ Privacy-safe: no raw question text in telemetry
+
+## Answers Trace Gate Criteria
+
+- ✅ All traces validate against schema (AJV)
+- ✅ First step is always a rule step
+- ✅ final_value matches Answer Card value (unless conflict:true)
+- ✅ All steps have ≥1 citation
+- ✅ Trace modal is keyboard accessible (focus trap, Esc)
+- ✅ Copy JSON/Markdown actions work and fire telemetry
+- ✅ E2E tests pass (0 retries)
 
 ## Related Issues
 

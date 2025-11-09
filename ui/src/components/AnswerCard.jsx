@@ -4,7 +4,9 @@ import Button from './Button'
 import CodeModal from './CodeModal'
 import SourceList from './SourceList'
 import FeedbackSheet from './FeedbackSheet'
+import TraceModal from './TraceModal'
 import type { ZoningAnswer } from '../engine/answers/rules'
+import type { AnswerTrace } from '../engine/answers/trace'
 
 interface AnswerCardProps {
   answer: ZoningAnswer
@@ -22,6 +24,9 @@ const intentLabels: Record<string, string> = {
 export default function AnswerCard({ answer }: AnswerCardProps) {
   const [codeModalOpen, setCodeModalOpen] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const [traceModalOpen, setTraceModalOpen] = useState(false)
+  
+  const trace = (answer as any).trace as AnswerTrace | undefined
 
   const label = intentLabels[answer.intent] || answer.intent
   const cardId = `answer-card-${answer.intent}`

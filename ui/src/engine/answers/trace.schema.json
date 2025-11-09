@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["answer_id", "jurisdiction_id", "district", "intent", "units", "steps", "provenance", "final_value", "conflict"],
+  "properties": {
+    "answer_id": {
+      "type": "string",
+      "description": "Unique identifier for the answer (e.g., 'SF-3:front_setback')"
+    },
+    "jurisdiction_id": {
+      "type": "string",
+      "description": "Jurisdiction identifier (e.g., 'austin', 'travis_etj')"
+    },
+    "district": {
+      "type": "string",
+      "description": "Zoning district (e.g., 'SF-3')"
+    },
+    "intent": {
+      "type": "string",
+      "enum": ["front_setback", "side_setback", "rear_setback", "max_height", "lot_coverage", "min_lot_size"]
+    },
+    "units": {
+      "type": "string",
+      "description": "Unit of measurement (e.g., 'ft', 'percent', 'sqft')"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type", "id", "expr", "value", "citations"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["rule", "overlay", "exception", "override"]
+          },
+          "id": {
+            "type": "string",
+            "description": "Step identifier (e.g., 'rule.SF3.front', 'overlay.WQZ.min25')"
+          },
+          "op": {
+            "type": "string",
+            "enum": ["replace", "add", "min", "max"],
+            "description": "Operation type (for overlay/exception/override steps)"
+          },
+          "expr": {
+            "type": "string",
+            "description": "Mathematical expression (e.g., '25', 'max(prev, 25)', 'prev + 5')"
+          },
+          "value": {
+            "type": "number",
+            "description": "Computed value at this step"
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["code_id", "section"],
+              "properties": {
+                "code_id": {
+                  "type": "string"
+                },
+                "section": {
+                  "type": "string"
+                },
+                "anchor": {
+                  "type": "string"
+                },
+                "snippet": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "published_at": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["rule", "overlay", "exception", "override", "conflict"],
+      "description": "Final influencer in the chain"
+    },
+    "final_value": {
+      "type": ["number", "null"],
+      "description": "Final computed value (null if conflict:true)"
+    },
+    "conflict": {
+      "type": "boolean",
+      "description": "Whether conflicting constraints were detected"
+    }
+  },
+  "additionalProperties": false
+}
+

@@ -1,0 +1,96 @@
+{
+  "zone": "SF-1",
+  "answers": [
+    {
+      "intent": "front_setback",
+      "status": "answered",
+      "value": 40,
+      "unit": "ft",
+      "rationale": "Minimum front yard setback for SF-1",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-490",
+          "anchor": "(B)(1)",
+          "snippet": "Front yard: 40 feet minimum"
+        }
+      ]
+    },
+    {
+      "intent": "side_setback",
+      "status": "answered",
+      "value": 10,
+      "unit": "ft",
+      "rationale": "Minimum interior side yard setback for SF-1",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-490",
+          "anchor": "(B)(2)",
+          "snippet": "Interior side yard: 10 feet minimum"
+        }
+      ]
+    },
+    {
+      "intent": "rear_setback",
+      "status": "answered",
+      "value": 25,
+      "unit": "ft",
+      "rationale": "Minimum rear yard setback for SF-1",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-490",
+          "anchor": "(B)(3)",
+          "snippet": "Rear yard: 25 feet minimum"
+        }
+      ]
+    },
+    {
+      "intent": "max_height",
+      "status": "answered",
+      "value": 35,
+      "unit": "ft",
+      "rationale": "Maximum building height for SF-1",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-490",
+          "anchor": "(C)",
+          "snippet": "Maximum height: 35 feet"
+        }
+      ]
+    },
+    {
+      "intent": "lot_coverage",
+      "status": "answered",
+      "value": 35,
+      "unit": "percent",
+      "rationale": "Maximum lot coverage for SF-1",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-490",
+          "anchor": "(D)",
+          "snippet": "Maximum lot coverage: 35 percent"
+        }
+      ]
+    },
+    {
+      "intent": "min_lot_size",
+      "status": "answered",
+      "value": 8750,
+      "unit": "sqft",
+      "rationale": "Minimum lot size for SF-1",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-490",
+          "anchor": "(A)",
+          "snippet": "Minimum lot size: 8,750 square feet"
+        }
+      ]
+    }
+  ]
+}
+

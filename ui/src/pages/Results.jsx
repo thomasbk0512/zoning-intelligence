@@ -6,7 +6,10 @@ import Button from '../components/Button'
 import { SkeletonCard } from '../components/Skeleton'
 import SourcesFlyout from '../components/SourcesFlyout'
 import Map from '../components/Map'
+import AnswerCard from '../components/AnswerCard'
+import { getAnswers } from '../lib/answers'
 import type { ZoningResult } from '../types'
+import type { AnswersResponse } from '../lib/answers'
 
 export default function Results() {
   const location = useLocation()
@@ -15,12 +18,33 @@ export default function Results() {
   const [loading, setLoading] = useState(!result)
   const [announcement, setAnnouncement] = useState('')
   const [sourcesFlyoutOpen, setSourcesFlyoutOpen] = useState(false)
+  const [answers, setAnswers] = useState<AnswersResponse | null>(null)
+  const [answersLoading, setAnswersLoading] = useState(false)
 
   useEffect(() => {
     if (result) {
       setLoading(false)
       // Announce results with key information
       setAnnouncement(`Zoning results loaded for APN ${result.apn}. Zone: ${result.zone}. Height limit: ${result.height_ft} feet. FAR: ${result.far}.`)
+      
+      // Load answers
+      setAnswersLoading(true)
+      getAnswers({
+        apn: result.apn,
+        city: result.jurisdiction.toLowerCase().includes('austin') ? 'austin' : 'austin',
+        zone: result.zone,
+      })
+        .then(response => {
+          setAnswers(response)
+          // Telemetry is tracked in getAnswers()
+        })
+        .catch(error => {
+          console.warn('Failed to load answers:', error)
+          setAnswers(null)
+        })
+        .finally(() => {
+          setAnswersLoading(false)
+        })
     } else if (loading) {
       setAnnouncement('Loading zoning results...')
     }
@@ -100,6 +124,42 @@ export default function Results() {
             zoningGeometry={result.zoning_geometry}
           />
         </Card>
+
+        {/* Zoning Answers (Beta) */}
+        {answers && answers.answers.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold">Zoning Answers (Beta)</h2>
+              <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                Beta
+              </span>
+            </div>
+            <p className="text-sm text-gray-600">
+              Authoritative answers to common zoning questions with code citations.
+            </p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {answers.answers.map((answer, index) => (
+                <AnswerCard key={index} answer={answer} />
+              ))}
+            </div>
+            <p className="text-xs text-gray-500">
+              <a href="/disclaimer" className="text-primary-600 hover:underline">
+                Disclaimer: Informational only. Consult your jurisdiction for official requirements.
+              </a>
+            </p>
+          </div>
+        )}
+
+        {answersLoading && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold">Zoning Answers (Beta)</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+          </div>
+        )}
 
         <Card title="Property Information">
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">

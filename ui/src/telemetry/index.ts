@@ -47,10 +47,13 @@ export function initTelemetry(initialRoute: string = '/') {
     })
   }
 
-  // Expose flush function for E2E tests
+  // Expose flush function and track function for E2E tests
   if (typeof window !== 'undefined') {
     ;(window as any).__telem_flush = flush
     ;(window as any).__telem_get_queue = () => [...eventQueue]
+    ;(window as any).__telem_track = (eventType: string, payload: any) => {
+      track({ event_type: eventType as any, ...payload } as any)
+    }
   }
 }
 

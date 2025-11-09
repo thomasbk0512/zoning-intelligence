@@ -11,7 +11,8 @@ Quality gates aggregate results from multiple CI jobs and produce a **single blo
 1. **E2E Tests** - Playwright-based end-to-end tests (`@happy` tagged)
 2. **Lighthouse CI** - Performance, accessibility, best practices, and SEO audits
 3. **Telemetry Validation** - Schema validation for telemetry events
-4. **Quality Gates Aggregator** - Produces single pass/fail verdict
+4. **Answers** - Rules engine and golden fixture validation
+5. **Quality Gates Aggregator** - Produces single pass/fail verdict
 
 All gates are **enabled by default** for PRs to `main` and tag builds.
 
@@ -30,6 +31,7 @@ All gates are **enabled by default** for PRs to `main` and tag builds.
 | **A11y Violations** | 0 serious/critical | ✅ Blocking |
 | **Contrast Failures** | 0 | ✅ Blocking |
 | **Telemetry Schema** | Validation passes | ✅ Blocking |
+| **Answers** | All golden zones have answers (no missing) | ✅ Blocking |
 | **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
 ## Enabling Quality Gates

@@ -139,14 +139,14 @@ export default function Search() {
           )}
 
           <div>
-            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="city" className="block text-sm font-medium text-text mb-2">
               City
             </label>
             <select
               id="city"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-border rounded-2 bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               <option value="austin">Austin, TX</option>
             </select>
@@ -163,8 +163,8 @@ export default function Search() {
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg" role="alert" aria-live="assertive" aria-atomic="true">
-              <p className="text-sm text-red-800 mb-3">{error}</p>
+            <div className="p-4 bg-primary-weak border border-danger rounded-2" role="alert" aria-live="assertive" aria-atomic="true">
+              <p className="text-sm text-danger mb-3">{error}</p>
               <Button
                 type="button"
                 onClick={handleSubmit}

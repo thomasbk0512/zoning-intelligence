@@ -1,27 +1,24 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Card from '../components/Card'
 import KeyValue from '../components/KeyValue'
 import Button from '../components/Button'
 import { SkeletonCard } from '../components/Skeleton'
 import SourcesFlyout from '../components/SourcesFlyout'
 import Map from '../components/Map'
-import { trackResultsRender, trackErrorShown } from '../hooks/useTelemetry'
 import type { ZoningResult } from '../types'
 
 export default function Results() {
   const location = useLocation()
   const navigate = useNavigate()
-  const result = location.state?.result as (ZoningResult & { __fetch_ms?: number }) | undefined
+  const result = location.state?.result as ZoningResult | undefined
   const [loading, setLoading] = useState(!result)
   const [announcement, setAnnouncement] = useState('')
   const [sourcesFlyoutOpen, setSourcesFlyoutOpen] = useState(false)
-  const renderStartRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (result) {
       setLoading(false)
-      renderStartRef.current = performance.now()
       // Announce results with key information
       setAnnouncement(`Zoning results loaded for APN ${result.apn}. Zone: ${result.zone}. Height limit: ${result.height_ft} feet. FAR: ${result.far}.`)
     } else if (loading) {
@@ -29,34 +26,11 @@ export default function Results() {
     }
   }, [result, loading])
 
-  // Track results render after component mounts
-  useEffect(() => {
-    if (result && renderStartRef.current !== null) {
-      const renderMs = Math.round(performance.now() - renderStartRef.current)
-      const fetchMs = result.__fetch_ms || 0
-      
-      // Count schema fields (11 expected)
-      const schemaFields = [
-        'apn', 'jurisdiction', 'zone',
-        'setbacks_ft', 'height_ft', 'far', 'lot_coverage_pct',
-        'overlays', 'sources', 'notes', 'run_ms'
-      ].filter(field => {
-        if (field === 'setbacks_ft') {
-          return result.setbacks_ft && typeof result.setbacks_ft === 'object'
-        }
-        return (result as any)[field] !== undefined
-      }).length
-
-      trackResultsRender(1, fetchMs, renderMs, schemaFields)
-      renderStartRef.current = null
-    }
-  }, [result])
-
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-6">
-          <div className="h-8 bg-gray-200 rounded w-48 mb-4 animate-pulse" aria-hidden="true" />
+          <div className="h-8 bg-surface rounded-2 w-48 mb-4 animate-pulse" aria-hidden="true" />
         </div>
         <div className="space-y-6">
           <SkeletonCard />
@@ -67,20 +41,13 @@ export default function Results() {
     )
   }
 
-  // Track error if no result
-  useEffect(() => {
-    if (!result && !loading) {
-      trackErrorShown('results', 'NO_RESULTS')
-    }
-  }, [result, loading])
-
   if (!result) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Card>
           <div className="text-center">
-            <h2 className="text-xl font-semibold mb-4">No Results</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-xl font-semibold mb-4 text-text">No Results</h2>
+            <p className="text-text-muted mb-6">
               No zoning data found. Please search for a property first.
             </p>
             <Button onClick={() => navigate('/search')}>
@@ -105,17 +72,16 @@ export default function Results() {
       </div>
 
       <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold" data-testid="results-title">Zoning Results</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold text-text">Zoning Results</h1>
         <div className="flex gap-2">
           <Button 
             variant="secondary" 
             onClick={() => window.print()}
             className="no-print"
-            data-testid="results-print-button"
           >
             Print
           </Button>
-          <Button variant="secondary" onClick={() => navigate('/search')} data-testid="results-new-search-button">
+          <Button variant="secondary" onClick={() => navigate('/search')}>
             New Search
           </Button>
         </div>
@@ -125,7 +91,6 @@ export default function Results() {
         role="region" 
         aria-label="Zoning results"
         className="space-y-6"
-        data-testid="results-content"
       >
         {/* Map with overlays */}
         <Card title="Map View">
@@ -150,20 +115,20 @@ export default function Results() {
               <h3 className="font-semibold mb-3">Setbacks (ft)</h3>
               <ul className="space-y-2 text-sm">
                 <li className="flex justify-between">
-                  <span className="text-gray-600">Front:</span>
+                  <span className="text-text-muted">Front:</span>
                   <span className="font-medium">{result.setbacks_ft.front}</span>
                 </li>
                 <li className="flex justify-between">
-                  <span className="text-gray-600">Side:</span>
+                  <span className="text-text-muted">Side:</span>
                   <span className="font-medium">{result.setbacks_ft.side}</span>
                 </li>
                 <li className="flex justify-between">
-                  <span className="text-gray-600">Rear:</span>
+                  <span className="text-text-muted">Rear:</span>
                   <span className="font-medium">{result.setbacks_ft.rear}</span>
                 </li>
                 {result.setbacks_ft.street_side > 0 && (
                   <li className="flex justify-between">
-                    <span className="text-gray-600">Street Side:</span>
+                    <span className="text-text-muted">Street Side:</span>
                     <span className="font-medium">{result.setbacks_ft.street_side}</span>
                   </li>
                 )}
@@ -173,15 +138,15 @@ export default function Results() {
               <h3 className="font-semibold mb-3">Limits</h3>
               <ul className="space-y-2 text-sm">
                 <li className="flex justify-between">
-                  <span className="text-gray-600">Height:</span>
+                  <span className="text-text-muted">Height:</span>
                   <span className="font-medium">{result.height_ft} ft</span>
                 </li>
                 <li className="flex justify-between">
-                  <span className="text-gray-600">FAR:</span>
+                  <span className="text-text-muted">FAR:</span>
                   <span className="font-medium">{result.far}</span>
                 </li>
                 <li className="flex justify-between">
-                  <span className="text-gray-600">Lot Coverage:</span>
+                  <span className="text-text-muted">Lot Coverage:</span>
                   <span className="font-medium">{result.lot_coverage_pct}%</span>
                 </li>
               </ul>
@@ -201,7 +166,7 @@ export default function Results() {
 
         {result.notes && (
           <Card title="Notes">
-            <p className="text-sm text-gray-700">{result.notes}</p>
+            <p className="text-sm text-text">{result.notes}</p>
           </Card>
         )}
 
@@ -211,7 +176,7 @@ export default function Results() {
               {result.sources.slice(0, 2).map((source, idx) => (
                 <li key={idx} className="py-1">
                   <span className="font-medium">{source.type}:</span>{' '}
-                  <span className="text-gray-600">{source.cite}</span>
+                  <span className="text-text-muted">{source.cite}</span>
                 </li>
               ))}
             </ul>
@@ -225,7 +190,7 @@ export default function Results() {
               </Button>
             )}
           </div>
-          <p className="text-xs text-gray-500 mt-4">
+          <p className="text-xs text-text-muted mt-4">
             Query completed in {result.run_ms}ms
           </p>
         </Card>

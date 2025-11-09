@@ -1,6 +1,6 @@
 {
   "name": "zoning-intelligence-ui",
-  "version": "1.4.0-rc.1",
+  "version": "1.0.0",
   "description": "Zoning Intelligence CLI - Web UI",
   "private": true,
   "type": "module",
@@ -17,12 +17,7 @@
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
     "qg:aggregate": "node ../scripts/qg/aggregate.mjs",
-    "qg:check": "node ../scripts/qg/exit-on-thresholds.mjs",
-    "schema:freeze": "node ../scripts/schema/freeze-ui.mjs",
-    "schema:verify": "node ../scripts/schema/verify-ui.mjs",
-    "telemetry:verify": "node ../scripts/telemetry/verify-contract.mjs",
-    "build:inject-info": "node ../scripts/build/inject-build-info.mjs",
-    "build:rc": "npm run build:inject-info && npm run build"
+    "qg:check": "node ../scripts/qg/exit-on-thresholds.mjs"
   },
   "dependencies": {
     "axios": "^1.6.2",

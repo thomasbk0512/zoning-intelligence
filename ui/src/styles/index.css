@@ -1,4 +1,5 @@
 @import './print.css';
+@import '../design/tokens.css';
 
 @tailwind base;
 @tailwind components;
@@ -6,7 +7,8 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-surface text-text;
+    font-family: var(--font-family);
   }
   
   /* Screen reader only class */

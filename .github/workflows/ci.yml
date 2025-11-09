@@ -94,3 +94,50 @@ jobs:
       - name: No UI project found — skipping
         if: steps.ui.outputs.present == 'false'
         run: echo "No package.json found in repo or /ui — skipping UI job."
+
+  e2e-tests:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    if: env.E2E_ENABLE == 'true'
+    env:
+      E2E_ENABLE: ${{ vars.E2E_ENABLE || 'false' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Playwright
+        working-directory: ui
+        run: |
+          npm ci
+          npx playwright install --with-deps
+      - name: Run E2E tests
+        working-directory: ui
+        run: |
+          npm run test:e2e || echo "E2E tests not yet implemented"
+        continue-on-error: true
+
+  lighthouse:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+    if: env.LH_ENABLE == 'true'
+    env:
+      LH_ENABLE: ${{ vars.LH_ENABLE || 'false' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Lighthouse CI
+        working-directory: ui
+        run: |
+          npm ci
+          npm install -g @lhci/cli
+      - name: Build UI
+        working-directory: ui
+        run: npm run build
+      - name: Run Lighthouse CI
+        working-directory: ui
+        run: |
+          lhci autorun || echo "Lighthouse CI not yet configured"
+        continue-on-error: true

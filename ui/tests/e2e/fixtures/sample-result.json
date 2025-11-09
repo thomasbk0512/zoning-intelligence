@@ -1,0 +1,28 @@
+{
+  "apn": "0204050712",
+  "jurisdiction": "Austin, TX",
+  "zone": "SF-3",
+  "setbacks_ft": {
+    "front": 25.0,
+    "side": 5.0,
+    "rear": 10.0,
+    "street_side": 0.0
+  },
+  "height_ft": 35,
+  "far": 0.4,
+  "lot_coverage_pct": 40,
+  "overlays": [],
+  "sources": [
+    {
+      "type": "Zoning Code",
+      "cite": "Section 25-2-492"
+    },
+    {
+      "type": "Parcel Data",
+      "cite": "Travis County Appraisal District"
+    }
+  ],
+  "notes": "Standard single-family residential zoning",
+  "run_ms": 1234
+}
+

@@ -3,7 +3,11 @@ import { ZoningResult, SearchParams } from '../types'
 import { validateZoningResult } from './validate'
 import { getCacheKey, getCachedResult, setCachedResult } from './cache'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+// Stub mode for E2E tests (deterministic, no live network)
+const E2E_STUB = import.meta.env.VITE_E2E_STUB === '1' || import.meta.env.E2E_STUB === '1'
+const BASE_URL = E2E_STUB 
+  ? 'http://localhost:4173' // Stub endpoint (handled by Playwright route interception)
+  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000')
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -12,6 +16,14 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+// Defer API initialization to avoid blocking initial render
+if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+  requestIdleCallback(() => {
+    // Warm up API connection
+    api.get('/health').catch(() => {})
+  })
+}
 
 export class APIError extends Error {
   constructor(
@@ -39,9 +51,11 @@ export async function getZoningByAPN(
   }
 
   try {
+    const fetchStart = performance.now()
     const response = await api.get<ZoningResult>('/zoning', {
       params: { apn, city },
     })
+    const fetchMs = Math.round(performance.now() - fetchStart)
     
     if (!validateZoningResult(response.data)) {
       throw new APIError('Invalid response schema from API')
@@ -49,6 +63,9 @@ export async function getZoningByAPN(
     
     // Cache the result
     setCachedResult(cacheKey, response.data)
+    
+    // Store fetch timing for telemetry
+    ;(response.data as any).__fetch_ms = fetchMs
     
     return response.data
   } catch (error) {
@@ -101,9 +118,11 @@ export async function getZoningByLatLng(
   }
 
   try {
+    const fetchStart = performance.now()
     const response = await api.get<ZoningResult>('/zoning', {
       params: { latitude, longitude, city },
     })
+    const fetchMs = Math.round(performance.now() - fetchStart)
     
     if (!validateZoningResult(response.data)) {
       throw new APIError('Invalid response schema from API')
@@ -111,6 +130,9 @@ export async function getZoningByLatLng(
     
     // Cache the result
     setCachedResult(cacheKey, response.data)
+    
+    // Store fetch timing for telemetry
+    ;(response.data as any).__fetch_ms = fetchMs
     
     return response.data
   } catch (error) {

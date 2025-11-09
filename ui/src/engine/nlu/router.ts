@@ -226,7 +226,7 @@ export function parseQuery(query: string): ParseResult {
  * @returns "low" | "medium" | "high"
  */
 export function confidenceBucket(score: number): 'low' | 'medium' | 'high' {
-  if (score >= 0.75) return 'high'
+  if (score >= 0.7) return 'high'
   if (score >= 0.5) return 'medium'
   return 'low'
 }

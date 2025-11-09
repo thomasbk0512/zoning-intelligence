@@ -1,12 +1,6 @@
 import { useState } from 'react'
-import { type CitationWithVersion } from '../engine/answers/citations'
 
-interface VersionNoticeProps {
-  citations: CitationWithVersion[]
-  onViewDiagnostics?: () => void
-}
-
-export default function VersionNotice({ citations, onViewDiagnostics }: VersionNoticeProps) {
+export default function VersionNotice({ citations, onViewDiagnostics }) {
   const [dismissed, setDismissed] = useState(false)
   
   const staleCitations = citations.filter(c => c.stale)

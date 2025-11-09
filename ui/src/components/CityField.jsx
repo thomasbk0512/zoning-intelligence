@@ -6,10 +6,10 @@ import { COPY } from '../copy/ui'
  */
 export default function CityField({ value = 'austin', onChange, multiJurisdiction = false }) {
   if (!multiJurisdiction) {
-    // Static scope line when only Austin is available
+    // Static display when only Austin is available
     return (
-      <div className="text-sm text-ink-700 border-t border-border pt-4 mt-4">
-        {COPY.search.coverageLine}
+      <div className="text-sm text-text-muted">
+        {COPY.city.jurisdiction}
       </div>
     )
   }

@@ -1,11 +1,6 @@
-import { getCitationUrl, formatCitation, getFullCitationText, type CitationWithVersion } from '../engine/answers/citations'
-import { type CodeCitation } from '../engine/answers/rules'
+import { getCitationUrl, formatCitation, getFullCitationText } from '../engine/answers/citations'
 
-interface SourceListProps {
-  citations: (CodeCitation | CitationWithVersion)[]
-}
-
-export default function SourceList({ citations }: SourceListProps) {
+export default function SourceList({ citations }) {
   if (citations.length === 0) {
     return null
   }
@@ -26,7 +21,7 @@ export default function SourceList({ citations }: SourceListProps) {
   )
 }
 
-function CitationItem({ citation }: { citation: CodeCitation | CitationWithVersion }) {
+function CitationItem({ citation }) {
   const url = getCitationUrl(citation)
   const formatted = formatCitation(citation)
   const fullText = getFullCitationText(citation)

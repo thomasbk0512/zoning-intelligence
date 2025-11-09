@@ -1,31 +1,52 @@
-# CI Quality Gates (v1.1.1)
+# CI Quality Gates (v1.3.0)
 
 ## Overview
 
-Two optional CI jobs have been added for quality assurance:
+Quality gates aggregate results from multiple CI jobs and produce a **single blocking verdict** for pull requests and releases.
 
-1. **E2E Tests** - Playwright-based end-to-end tests
+**Status**: ✅ **BLOCKING** - All gates must pass for PRs to merge
+
+### Quality Gate Jobs
+
+1. **E2E Tests** - Playwright-based end-to-end tests (`@happy` tagged)
 2. **Lighthouse CI** - Performance, accessibility, best practices, and SEO audits
+3. **Telemetry Validation** - Schema validation for telemetry events
+4. **Quality Gates Aggregator** - Produces single pass/fail verdict
 
-Both jobs are **disabled by default** and can be enabled via repository variables.
+All gates are **enabled by default** for PRs to `main` and tag builds.
+
+## Thresholds Table
+
+| Gate | Threshold | Status |
+|------|-----------|--------|
+| **E2E Tests** | All `@happy` tests pass, 0 retries | ✅ Blocking |
+| **Lighthouse Performance** | ≥90 (mobile) | ✅ Blocking |
+| **Lighthouse Accessibility** | ≥95 (mobile) | ✅ Blocking |
+| **Lighthouse Best Practices** | ≥90 (mobile) | ✅ Blocking |
+| **Lighthouse SEO** | ≥90 (mobile) | ✅ Blocking |
+| **LCP** | ≤2.5s | ✅ Blocking |
+| **CLS** | ≤0.10 | ✅ Blocking |
+| **TBT** | ≤200ms | ✅ Blocking |
+| **A11y Violations** | 0 serious/critical | ✅ Blocking |
+| **Contrast Failures** | 0 | ✅ Blocking |
+| **Telemetry Schema** | Validation passes | ✅ Blocking |
+| **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
 ## Enabling Quality Gates
 
-### Via Repository Variables
+**Default**: All gates are **enabled by default** for PRs to `main` and tag builds.
+
+### Disabling Gates (Not Recommended)
+
+To temporarily disable a gate:
 
 1. Go to **Settings → Secrets and variables → Actions → Variables**
-2. Add variables:
-   - `E2E_ENABLE` = `true` (to enable E2E tests)
-   - `LH_ENABLE` = `true` (to enable Lighthouse CI)
+2. Set variable to `false`:
+   - `E2E_ENABLE=false`
+   - `LH_ENABLE=false`
+   - `TELEM_ENABLE=false`
 
-**Quick Enable**:
-- Settings → Secrets and variables → Actions → Variables → New repository variable
-- Name: `E2E_ENABLE`, Value: `true` (repeat for `LH_ENABLE`)
-- CI will show "SKIPPED (flag=false)" when disabled
-
-### Via Workflow Dispatch (Future)
-
-Workflows can be triggered manually with these flags set.
+**Note**: Disabling gates will cause the quality-gates aggregator to fail (missing artifacts).
 
 ## E2E Tests
 
@@ -153,6 +174,53 @@ node scripts/telemetry/validate.mjs artifacts/telemetry.ndjson
 - ✅ No console errors during tests
 - ✅ CI uploads Playwright HTML report + traces/videos/screenshots
 - ✅ App bundle and schema unchanged; CI green
+
+## Quality Gates Aggregator
+
+**Job Name**: `quality-gates`
+
+**Status**: ✅ **BLOCKING** - Must pass for PRs to merge
+
+**Dependencies**: `e2e-tests`, `lighthouse`, `telemetry-validate`
+
+**Output**: 
+- `qg-summary.json` - Aggregated summary with pass/fail verdict
+- GitHub Step Summary - Markdown summary in CI logs
+- PR Comment - Summary posted to PR (if in PR context)
+
+**Verdict**: Single pass/fail based on all threshold checks
+
+### Branch Protection
+
+To make quality gates blocking:
+
+1. Go to **Settings → Branches → Branch protection rules**
+2. Add/edit rule for `main` branch
+3. Under **Require status checks to pass before merging**:
+   - Check **Require branches to be up to date before merging**
+   - Add required status check: **quality-gates**
+4. Save changes
+
+**See**: `QG_PLAYBOOK.md` for detailed setup instructions
+
+## Failure Triage Flow
+
+1. **Check Quality Gates Summary**:
+   - Download `quality-gates-summary` artifact
+   - Review `qg-summary.json` for specific violations
+   - Check `errors` array for threshold failures
+
+2. **Review Individual Job Artifacts**:
+   - `playwright-report` - E2E test failures
+   - `lighthouse-reports` - Lighthouse score details
+   - `telemetry-artifacts` - Telemetry validation errors
+
+3. **Fix and Re-run**:
+   - Address threshold violations
+   - Push changes
+   - Verify quality-gates job passes
+
+**See**: `QG_PLAYBOOK.md` for detailed triage instructions
 
 ## Telemetry Gate Criteria
 

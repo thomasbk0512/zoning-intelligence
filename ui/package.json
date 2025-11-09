@@ -15,7 +15,9 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "qg:aggregate": "node ../scripts/qg/aggregate.mjs",
+    "qg:check": "node ../scripts/qg/exit-on-thresholds.mjs"
   },
   "dependencies": {
     "axios": "^1.6.2",

@@ -5,6 +5,13 @@ import sampleResultLatLng from '../fixtures/sample-result-lat-lng.json'
 
 test.describe('Search Page', () => {
   test.beforeEach(async ({ page }) => {
+    // Track console errors
+    const consoleErrors: string[] = []
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text())
+      }
+    })
     // Intercept API calls and return fixture data
     await page.route('**/zoning?*', async (route) => {
       const url = new URL(route.request().url())
@@ -35,7 +42,7 @@ test.describe('Search Page', () => {
     })
   })
 
-  test('valid APN search navigates to results', async ({ page }) => {
+  test('valid APN search navigates to results @happy', async ({ page }) => {
     await page.goto('/search')
     
     // Fill in APN
@@ -52,7 +59,7 @@ test.describe('Search Page', () => {
     await expect(page.getByText(sampleResult.apn)).toBeVisible()
   })
 
-  test('valid lat/lng search navigates to results', async ({ page }) => {
+  test('valid lat/lng search navigates to results @happy', async ({ page }) => {
     await page.goto('/search?type=location')
     
     // Fill in coordinates

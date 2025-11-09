@@ -15,7 +15,7 @@ test.describe('Results Page', () => {
     })
   })
 
-  test('deep-link load via query params performs fetch', async ({ page }) => {
+  test('deep-link load via query params performs fetch @happy', async ({ page }) => {
     // Navigate directly to results with query params (simulating deep link)
     await page.goto('/results?type=apn&apn=0204050712&city=austin')
     
@@ -29,7 +29,7 @@ test.describe('Results Page', () => {
     await expect(page.getByText(sampleResult.apn)).toBeVisible()
   })
 
-  test('renders all 11 fields', async ({ page }) => {
+  test('renders all 11 fields @happy', async ({ page }) => {
     // Navigate via search flow
     await page.goto('/search')
     await page.locator(selectors.searchInputApn).fill('0204050712')

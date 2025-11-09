@@ -2,7 +2,14 @@ import { test, expect } from '@playwright/test'
 import { selectors } from './utils/selectors'
 
 test.describe('Home Page', () => {
-  test('loads successfully', async ({ page }) => {
+  test('loads successfully @happy', async ({ page }) => {
+    // Track console errors
+    const consoleErrors: string[] = []
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text())
+      }
+    })
     await page.goto('/')
     
     // Check page title
@@ -13,9 +20,17 @@ test.describe('Home Page', () => {
     
     // Check description
     await expect(page.getByText(/Get instant zoning information/i)).toBeVisible()
+    
+    // Fail on console errors (excluding known non-critical)
+    const criticalErrors = consoleErrors.filter(err => 
+      !err.includes('map') && 
+      !err.includes('tile') &&
+      !err.includes('favicon')
+    )
+    expect(criticalErrors).toHaveLength(0)
   })
 
-  test('skip link focus works', async ({ page }) => {
+  test('skip link focus works @happy', async ({ page }) => {
     await page.goto('/')
     
     // Press Tab to focus skip link (if present)

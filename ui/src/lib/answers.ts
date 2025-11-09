@@ -72,6 +72,13 @@ export async function getAnswers(request: AnswersRequest): Promise<AnswersRespon
     )
   }
 
+  // Enrich citations with version info
+  if (jurisdictionId) {
+    for (let i = 0; i < answers.length; i++) {
+      answers[i].citations = await enrichCitations(answers[i].citations, jurisdictionId)
+    }
+  }
+
   // Track telemetry
   if (typeof window !== 'undefined' && (window as any).__telem_track) {
     ;(window as any).__telem_track('answer_render', {

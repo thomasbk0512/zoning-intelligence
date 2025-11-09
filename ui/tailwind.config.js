@@ -8,8 +8,23 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: 'var(--color-primary)',
-          weak: 'var(--color-primary-weak)',
+          50: 'var(--color-primary-50)',
+          100: 'var(--color-primary-100)',
+          200: 'var(--color-primary-200)',
+          300: 'var(--color-primary-300)',
+          400: 'var(--color-primary-400)',
+          500: 'var(--color-primary-500)',
+          600: 'var(--color-primary-600)',
+          700: 'var(--color-primary-700)',
+          800: 'var(--color-primary-800)',
+          900: 'var(--color-primary-900)',
+          DEFAULT: 'var(--color-primary-600)',
+          weak: 'var(--color-primary-100)',
+        },
+        ink: {
+          900: 'var(--color-ink-900)',
+          700: 'var(--color-ink-700)',
+          100: 'var(--color-ink-100)',
         },
         text: {
           DEFAULT: 'var(--color-text)',
@@ -21,6 +36,7 @@ export default {
         success: 'var(--color-success)',
         warning: 'var(--color-warning)',
         danger: 'var(--color-danger)',
+        info: 'var(--color-info)',
       },
       borderRadius: {
         '1': 'var(--radius-1)',

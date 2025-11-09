@@ -17,12 +17,55 @@ const api = axios.create({
   },
 })
 
+// Connection status tracking
+let connectionStatus = 'unknown' // 'online' | 'offline' | 'unknown'
+let lastHealthCheck = 0
+const HEALTH_CHECK_INTERVAL = 30000 // 30 seconds
+
+/**
+ * Check backend health
+ */
+export async function checkBackendHealth() {
+  try {
+    const response = await api.get('/health', { timeout: 5000 })
+    connectionStatus = 'online'
+    lastHealthCheck = Date.now()
+    return true
+  } catch (error) {
+    connectionStatus = 'offline'
+    lastHealthCheck = Date.now()
+    return false
+  }
+}
+
+/**
+ * Get connection status
+ */
+export function getConnectionStatus() {
+  return connectionStatus
+}
+
 // Defer API initialization to avoid blocking initial render
-if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-  requestIdleCallback(() => {
-    // Warm up API connection
-    api.get('/health').catch(() => {})
-  })
+if (typeof window !== 'undefined') {
+  // Check online/offline status
+  const updateOnlineStatus = () => {
+    connectionStatus = navigator.onLine ? 'online' : 'offline'
+  }
+  
+  window.addEventListener('online', updateOnlineStatus)
+  window.addEventListener('offline', updateOnlineStatus)
+  updateOnlineStatus()
+
+  // Warm up API connection
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      checkBackendHealth().catch(() => {})
+    })
+  } else {
+    setTimeout(() => {
+      checkBackendHealth().catch(() => {})
+    }, 1000)
+  }
 }
 
 export class APIError extends Error {
@@ -77,7 +120,12 @@ export async function getZoningByAPN(
       }
       
       if (axiosError.code === 'ERR_NETWORK' || !axiosError.response) {
-        throw new APIError('Network error. Please check your connection.', undefined, true)
+        // Provide more specific error message
+        const isLocalhost = BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1')
+        const message = isLocalhost
+          ? 'Cannot connect to backend server. Make sure the backend is running on ' + BASE_URL
+          : 'Network error. Please check your connection and try again.'
+        throw new APIError(message, undefined, true)
       }
       
       const status = axiosError.response.status
@@ -144,7 +192,12 @@ export async function getZoningByLatLng(
       }
       
       if (axiosError.code === 'ERR_NETWORK' || !axiosError.response) {
-        throw new APIError('Network error. Please check your connection.', undefined, true)
+        // Provide more specific error message
+        const isLocalhost = BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1')
+        const message = isLocalhost
+          ? 'Cannot connect to backend server. Make sure the backend is running on ' + BASE_URL
+          : 'Network error. Please check your connection and try again.'
+        throw new APIError(message, undefined, true)
       }
       
       const status = axiosError.response.status

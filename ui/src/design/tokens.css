@@ -1,15 +1,39 @@
 :root {
-  /* Colors */
-  --color-primary: #3538CD;
-  --color-primary-weak: #E5E7FF;
-  --color-text: #0B1221;
-  --color-text-muted: #475467;
-  --color-bg: #FFFFFF;
+  /* Primary Colors - Burnt Orange (Austin/Texas theme) */
+  --color-primary-50: #FFF3E8;
+  --color-primary-100: #FFE6CC;
+  --color-primary-200: #FFCD99;
+  --color-primary-300: #FFB166;
+  --color-primary-400: #FF9640;
+  --color-primary-500: #E87310;
+  --color-primary-600: #BF5700;
+  --color-primary-700: #A64B00;
+  --color-primary-800: #7A3600;
+  --color-primary-900: #532500;
+  
+  /* Primary aliases for backward compatibility */
+  --color-primary: var(--color-primary-600);
+  --color-primary-weak: var(--color-primary-100);
+  
+  /* Ink (text) colors */
+  --color-ink-900: #111827;
+  --color-ink-700: #374151;
+  --color-ink-100: #F3F4F6;
+  
+  /* Text aliases */
+  --color-text: var(--color-ink-900);
+  --color-text-muted: var(--color-ink-700);
+  
+  /* Surface colors */
   --color-surface: #F8FAFC;
+  --color-bg: #FFFFFF;
   --color-border: #E5E7EB;
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
+  
+  /* Status colors */
+  --color-success: #0F766E;
+  --color-warning: #B45309;
+  --color-danger: #B91C1C;
+  --color-info: #1D4ED8;
 
   /* Radii (px) */
   --radius-1: 4px;
@@ -43,4 +67,3 @@
   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
   --shadow-md: 0 4px 8px rgba(16, 24, 40, 0.08);
 }
-

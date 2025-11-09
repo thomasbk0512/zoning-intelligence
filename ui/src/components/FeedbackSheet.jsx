@@ -80,7 +80,7 @@ export default function FeedbackSheet({ answer, isOpen, onClose, onSubmit }) {
   const handleSubmit = () => {
     if (!vote) return
 
-    const feedback: FeedbackData = {
+    const feedback = {
       answer_id: answer.answer_id || `${answer.intent}`,
       intent: answer.intent,
       district: answer.answer_id?.split(':')[0] || '',

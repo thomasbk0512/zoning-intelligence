@@ -1,12 +1,12 @@
 import { COPY } from '../copy/ui'
 
 const intentLabels = {
-  front_setback: COPY.intent.frontSetback,
-  side_setback: COPY.intent.sideSetback,
-  rear_setback: COPY.intent.rearSetback,
-  max_height: COPY.intent.maxHeight,
-  lot_coverage: COPY.intent.lotCoverage,
-  min_lot_size: COPY.intent.minLotSize,
+  front_setback: COPY.intent.front_setback,
+  side_setback: COPY.intent.side_setback,
+  rear_setback: COPY.intent.rear_setback,
+  max_height: COPY.intent.max_height,
+  lot_coverage: COPY.intent.lot_coverage,
+  min_lot_size: COPY.intent.min_lot_size,
 }
 
 export default function IntentChip({ intent, confidence, onClick, className = '' }) {

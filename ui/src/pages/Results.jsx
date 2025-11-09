@@ -111,8 +111,9 @@ export default function Results() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="mb-6">
-          <div className="h-8 bg-surface rounded-2 w-48 mb-4 animate-pulse" aria-hidden="true" />
+        <div className="mb-8">
+          <div className="h-10 bg-ink-100 rounded-xl w-64 mb-2 animate-pulse" aria-hidden="true" />
+          <div className="h-5 bg-ink-100 rounded-lg w-48 animate-pulse" aria-hidden="true" />
         </div>
         <div className="space-y-6">
           <SkeletonCard />
@@ -125,16 +126,26 @@ export default function Results() {
 
   if (!result) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Card>
-          <div className="text-center">
-            <h2 className="text-xl font-semibold mb-4 text-text">No Results</h2>
-            <p className="text-text-muted mb-6">
-              No zoning data found. Please search for a property first.
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <Card className="text-center">
+          <div className="max-w-md mx-auto py-8">
+            <div className="mb-6">
+              <svg className="w-16 h-16 mx-auto text-ink-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold mb-3 text-ink-900">No Results Found</h2>
+            <p className="text-ink-700 mb-8">
+              No zoning data found. Please search for a property to get started.
             </p>
-            <Button onClick={() => navigate('/search')}>
-              Go to Search
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={() => navigate('/search')} className="px-6">
+                Start New Search
+              </Button>
+              <Button variant="secondary" onClick={() => navigate('/')} className="px-6">
+                Go to Home
+              </Button>
+            </div>
           </div>
         </Card>
       </div>

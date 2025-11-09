@@ -16,8 +16,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           ref={ref}
-          className={`w-full px-4 py-2 border rounded-2 bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors ${
-            error ? 'border-danger' : 'border-border'
+          className={`w-full px-4 py-2.5 border rounded-lg bg-white text-ink-900 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all duration-200 placeholder:text-ink-500 shadow-sm ${
+            error ? 'border-danger focus:ring-danger focus:border-danger' : 'border-border'
           } ${className}`}
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={error ? `${props.id}-error` : undefined}

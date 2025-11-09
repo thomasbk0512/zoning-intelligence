@@ -13,7 +13,7 @@ export default function ConflictNotice({ answer, conflictSources }) {
 
   const intentLabel = answer.intent.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 
-  const handleViewCode = (citation: any) => {
+  const handleViewCode = (citation) => {
     setSelectedCitation(citation)
     setCodeModalOpen(true)
   }

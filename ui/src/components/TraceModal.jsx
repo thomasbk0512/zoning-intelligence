@@ -108,7 +108,7 @@ export default function TraceModal({ answer, trace, isOpen, onClose }) {
     }
   }
 
-  const handleViewCode = (citation: any) => {
+  const handleViewCode = (citation) => {
     setSelectedCitation(citation)
     setCodeModalOpen(true)
   }

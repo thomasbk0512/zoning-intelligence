@@ -7,8 +7,9 @@ import CityField from '../components/CityField'
 import Button from '../components/Button'
 import Card from '../components/Card'
 import ParsePreview from '../components/ParsePreview'
+import ErrorDisplay from '../components/ErrorDisplay'
 import { parseQuery, confidenceBucket } from '../engine/nlu/router'
-import { getZoningByAPN, getZoningByLatLng, APIError } from '../lib/api'
+import { getZoningByAPN, getZoningByLatLng, APIError, checkBackendHealth, getConnectionStatus } from '../lib/api'
 import { addRecent } from '../lib/recents'
 import { validateActiveTab } from '../lib/validation'
 import { COPY } from '../copy/ui'
@@ -30,9 +31,30 @@ export default function Search() {
   const [parse, setParse] = useState(null)
   const [loading, setLoading] = useState(false)
   const [validationErrors, setValidationErrors] = useState({})
+  const [apiError, setApiError] = useState(null)
+  const [connectionStatus, setConnectionStatus] = useState('unknown')
   
   // Focus management on route change
   const formRef = useRef(null)
+  
+  // Check connection status on mount
+  useEffect(() => {
+    const checkConnection = async () => {
+      const status = getConnectionStatus()
+      setConnectionStatus(status)
+      
+      if (status === 'offline' || status === 'unknown') {
+        const isHealthy = await checkBackendHealth()
+        setConnectionStatus(isHealthy ? 'online' : 'offline')
+      }
+    }
+    
+    checkConnection()
+    
+    // Periodic health check
+    const interval = setInterval(checkConnection, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Handle prefill from Home page
   useEffect(() => {
@@ -74,6 +96,10 @@ export default function Search() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
+    // Clear previous errors
+    setApiError(null)
+    setValidationErrors({})
+    
     // Validate active tab only
     const validation = validateActiveTab(searchType, {
       nlq,
@@ -98,7 +124,17 @@ export default function Search() {
       return
     }
     
-    setValidationErrors({})
+    // Check connection before submitting
+    if (connectionStatus === 'offline') {
+      const isHealthy = await checkBackendHealth()
+      if (!isHealthy) {
+        setApiError(new APIError('Backend server is not available. Please ensure the server is running.', undefined, true))
+        setConnectionStatus('offline')
+        return
+      }
+      setConnectionStatus('online')
+    }
+    
     setLoading(true)
 
     try {
@@ -125,12 +161,32 @@ export default function Search() {
       navigate('/results', { state: { result } })
     } catch (err) {
       if (err instanceof APIError) {
+        setApiError(err)
+        // Also set validation error for field-level display
         setValidationErrors({ [searchType === 'apn' ? 'apn' : 'location']: err.message })
+        
+        // Update connection status
+        if (err.isNetworkError) {
+          setConnectionStatus('offline')
+        }
       } else {
+        setApiError(new APIError(COPY.general.error))
         setValidationErrors({ general: COPY.general.error })
       }
     } finally {
       setLoading(false)
+    }
+  }
+  
+  const handleRetry = async () => {
+    // Re-check connection
+    const isHealthy = await checkBackendHealth()
+    setConnectionStatus(isHealthy ? 'online' : 'offline')
+    
+    if (isHealthy) {
+      // Retry the last search
+      const syntheticEvent = { preventDefault: () => {} }
+      await handleSubmit(syntheticEvent)
     }
   }
 
@@ -181,6 +237,10 @@ export default function Search() {
   const handleNlqSubmit = async (e) => {
     e.preventDefault()
     
+    // Clear previous errors
+    setApiError(null)
+    setValidationErrors({})
+    
     // Validate NLQ tab
     const validation = validateActiveTab('nlq', { nlq })
     if (!validation.valid) {
@@ -193,7 +253,17 @@ export default function Search() {
       return
     }
 
-    setValidationErrors({})
+    // Check connection before submitting
+    if (connectionStatus === 'offline') {
+      const isHealthy = await checkBackendHealth()
+      if (!isHealthy) {
+        setApiError(new APIError('Backend server is not available. Please ensure the server is running.', undefined, true))
+        setConnectionStatus('offline')
+        return
+      }
+      setConnectionStatus('online')
+    }
+    
     setLoading(true)
 
     try {
@@ -228,8 +298,15 @@ export default function Search() {
       }
     } catch (err) {
       if (err instanceof APIError) {
+        setApiError(err)
         setValidationErrors({ nlq: err.message })
+        
+        // Update connection status
+        if (err.isNetworkError) {
+          setConnectionStatus('offline')
+        }
       } else {
+        setApiError(new APIError(COPY.general.error))
         setValidationErrors({ general: COPY.general.error })
       }
     } finally {
@@ -263,9 +340,9 @@ export default function Search() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">{COPY.search.title}</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold text-ink-900 mb-8 tracking-tight">{COPY.search.title}</h1>
       
-      <Card>
+      <Card className="shadow-md">
         <Tabs
           value={searchType}
           onChange={(value) => setSearchType(value)}
@@ -287,8 +364,8 @@ export default function Search() {
                 value={nlq}
                 onChange={(e) => handleNlqChange(e.target.value)}
                 placeholder={COPY.search.askQuestionPlaceholder}
-                className="w-full px-4 py-3 border border-border rounded-lg bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                rows={3}
+                className="w-full px-5 py-3.5 border-2 border-border rounded-xl bg-white text-ink-900 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition-all duration-200 placeholder:text-ink-500 shadow-sm resize-none"
+                rows={4}
                 aria-describedby="nlq-help"
                 aria-invalid={!!validationErrors.nlq}
               />
@@ -313,21 +390,46 @@ export default function Search() {
               />
             )}
 
-            {validationErrors.general && (
+            {/* Error display with retry */}
+            {apiError && (
+              <ErrorDisplay 
+                error={apiError} 
+                onRetry={handleRetry}
+              />
+            )}
+
+            {validationErrors.general && !apiError && (
               <div className="p-4 bg-primary-weak border border-danger rounded-2" role="alert">
                 <p className="text-sm text-danger">{validationErrors.general}</p>
               </div>
             )}
 
-            {/* Single primary CTA */}
+            {/* Single primary CTA - Always visible and enabled */}
             <Button
               type="submit"
-              disabled={loading || !parse?.intent}
-              className="w-full"
+              disabled={loading}
+              className="w-full py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200"
               onClick={handleCTAClick}
             >
-              {primaryCTA.label}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {COPY.search.searchingButton}
+                </span>
+              ) : (
+                primaryCTA.label
+              )}
             </Button>
+            
+            {/* Helper text when no input */}
+            {!nlq.trim() && !parse?.intent && !loading && (
+              <p className="text-xs text-ink-600 text-center mt-2">
+                Enter a question above to get started
+              </p>
+            )}
           </form>
         ) : (
           <form ref={formRef} onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-6 mt-6" noValidate>
@@ -373,6 +475,14 @@ export default function Search() {
           {/* City field - hidden when fixed to Austin */}
           <CityField value={city} onChange={setCity} multiJurisdiction={false} />
 
+          {/* Error display with retry */}
+          {apiError && (
+            <ErrorDisplay 
+              error={apiError} 
+              onRetry={handleRetry}
+            />
+          )}
+
           {/* ARIA live region for state announcements */}
           <div 
             role="status" 
@@ -383,7 +493,7 @@ export default function Search() {
             {loading ? COPY.general.searching : validationErrors.general ? `Error: ${validationErrors.general}` : COPY.general.readyToSearch}
           </div>
 
-          {validationErrors.general && (
+          {validationErrors.general && !apiError && (
             <div className="p-4 bg-primary-weak border border-danger rounded-2" role="alert" aria-live="assertive" aria-atomic="true">
               <p className="text-sm text-danger mb-3">{validationErrors.general}</p>
               <Button
@@ -402,10 +512,20 @@ export default function Search() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full"
+              className="w-full py-3 font-semibold shadow-sm hover:shadow-md transition-all duration-200"
               onClick={handleCTAClick}
             >
-              {primaryCTA.label}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {COPY.search.searchingButton}
+                </span>
+              ) : (
+                primaryCTA.label
+              )}
             </Button>
           </form>
         )}

@@ -4,11 +4,17 @@
  */
 
 export const COPY = {
+  // Scope
+  scope: {
+    banner: 'Austin, TX + Travis County ETJ',
+    coverage: 'Coverage: Austin & ETJ',
+  },
+
   // Home page
   home: {
     title: 'Zoning Intelligence',
-    subtitle: 'Get instant zoning information for any property',
-    nlqPlaceholder: "Ask a question... (e.g., 'how tall can I build in SF-3 APN 0204050712')",
+    subtitle: 'Instant zoning answers for Austin, TX parcels.',
+    nlqPlaceholder: "Ask a question or paste an APN… e.g., 'front setback SF-3 APN 0204050712'",
     nlqLabel: 'Ask a zoning question',
     searchButton: 'Search',
     searchingButton: 'Searching...',
@@ -21,7 +27,7 @@ export const COPY = {
   search: {
     title: 'Search Property',
     askQuestionLabel: 'Ask a Question',
-    askQuestionPlaceholder: "e.g., 'how tall can I build in SF-3 APN 0204050712'",
+    askQuestionPlaceholder: "Ask a question or paste an APN… e.g., 'front setback SF-3 APN 0204050712'",
     askQuestionHelp: 'Ask about setbacks, height limits, lot coverage, or minimum lot size. Include an APN or coordinates.',
     apnLabel: 'APN',
     apnPlaceholder: '0204050712',
@@ -38,6 +44,7 @@ export const COPY = {
     searchingButton: 'Searching...',
     continueButton: 'Continue with',
     getAnswersButton: 'Get Answers',
+    coverageLine: 'Coverage: Austin & ETJ',
   },
 
   // Parse preview
@@ -45,18 +52,18 @@ export const COPY = {
     detectedIntent: 'Detected Intent',
     multipleIntents: 'Multiple intents detected. Please select one:',
     confidence: {
-      high: 'High confidence match',
-      medium: 'Medium confidence - please verify',
-      low: 'Low confidence - may need clarification',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
     },
     guidance: {
       high: 'Ready to search',
       medium: 'Please review the detected intent and location',
-      low: 'Try adding more details or an APN/coordinates',
+      low: 'Low confidence — add APN or coordinates to route directly.',
     },
     missingApn: {
       title: 'Missing APN?',
-      message: 'Add an APN or coordinates to get instant results.',
+      message: 'Add an APN (0204050712) or coordinates (30.25,-97.75).',
       example: 'Example: "front setback for APN 0204050712" or "lot coverage at 30.25, -97.75"',
     },
     location: 'Location',
@@ -97,6 +104,55 @@ export const COPY = {
     retry: 'Retry Search',
     readyToSearch: 'Ready to search',
     searching: 'Searching for property...',
+  },
+
+  // Error messages
+  errors: {
+    network: {
+      title: 'Connection Error',
+      message: 'Unable to connect to the server.',
+      suggestions: [
+        'Check your internet connection',
+        'Verify the backend server is running',
+        'Try refreshing the page',
+      ],
+      retry: 'Retry Connection',
+    },
+    timeout: {
+      title: 'Request Timeout',
+      message: 'The request took too long to complete.',
+      suggestions: [
+        'The server may be busy. Please try again.',
+        'Check your internet connection speed',
+      ],
+      retry: 'Try Again',
+    },
+    server: {
+      title: 'Server Error',
+      message: 'The server encountered an error processing your request.',
+      suggestions: [
+        'Please try again in a few moments',
+        'If the problem persists, contact support',
+      ],
+      retry: 'Retry',
+    },
+    notFound: {
+      title: 'Property Not Found',
+      message: 'No property found matching your search.',
+      suggestions: [
+        'Double-check the APN or coordinates',
+        'Try a different search method',
+      ],
+    },
+    unknown: {
+      title: 'Something Went Wrong',
+      message: 'An unexpected error occurred.',
+      suggestions: [
+        'Please try again',
+        'If the problem continues, refresh the page',
+      ],
+      retry: 'Try Again',
+    },
   },
 }
 

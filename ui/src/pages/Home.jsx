@@ -4,8 +4,9 @@ import Button from '../components/Button'
 import Card from '../components/Card'
 import IntentChip from '../components/IntentChip'
 import ParsePreview from '../components/ParsePreview'
+import ErrorDisplay from '../components/ErrorDisplay'
 import { parseQuery, confidenceBucket } from '../engine/nlu/router'
-import { getZoningByAPN, getZoningByLatLng, APIError } from '../lib/api'
+import { getZoningByAPN, getZoningByLatLng, APIError, checkBackendHealth, getConnectionStatus } from '../lib/api'
 import { getRecentSearches, addRecent } from '../lib/recents'
 import { COPY } from '../copy/ui'
 
@@ -22,7 +23,9 @@ export default function Home() {
   const [parse, setParse] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [apiError, setApiError] = useState(null)
   const [recents, setRecents] = useState([])
+  const [connectionStatus, setConnectionStatus] = useState('unknown')
 
   // Load recent searches and focus management
   useEffect(() => {
@@ -40,6 +43,19 @@ export default function Home() {
     if (nlqInputRef.current) {
       nlqInputRef.current.focus()
     }
+    
+    // Check connection status
+    const checkConnection = async () => {
+      const status = getConnectionStatus()
+      setConnectionStatus(status)
+      
+      if (status === 'offline' || status === 'unknown') {
+        const isHealthy = await checkBackendHealth()
+        setConnectionStatus(isHealthy ? 'online' : 'offline')
+      }
+    }
+    
+    checkConnection()
   }, [])
 
   const handleNlqChange = (value) => {
@@ -80,9 +96,39 @@ export default function Home() {
 
   const handleNlqSubmit = async (e) => {
     e.preventDefault()
-    if (!nlq.trim() || !parse?.intent) return
+    
+    // Validate input - show error if empty
+    if (!nlq.trim()) {
+      setError('Please enter a question or paste an APN')
+      return
+    }
+    
+    // If no intent detected, try to parse again or show helpful message
+    if (!parse?.intent) {
+      const result = parseQuery(nlq)
+      if (result.intent) {
+        setParse(result)
+        // Continue with submission below
+      } else {
+        setError('Could not understand your question. Try including an APN or being more specific (e.g., "front setback for APN 0204050712")')
+        return
+      }
+    }
 
     setError(null)
+    setApiError(null)
+    
+    // Check connection before submitting
+    if (connectionStatus === 'offline') {
+      const isHealthy = await checkBackendHealth()
+      if (!isHealthy) {
+        setApiError(new APIError('Backend server is not available. Please ensure the server is running.', undefined, true))
+        setConnectionStatus('offline')
+        return
+      }
+      setConnectionStatus('online')
+    }
+    
     setLoading(true)
 
     try {
@@ -116,28 +162,50 @@ export default function Home() {
       }
     } catch (err) {
       if (err instanceof APIError) {
+        setApiError(err)
         setError(err.message)
+        
+        // Update connection status
+        if (err.isNetworkError) {
+          setConnectionStatus('offline')
+        }
       } else {
-        setError('An unexpected error occurred. Please try again.')
+        const unknownError = new APIError('An unexpected error occurred. Please try again.')
+        setApiError(unknownError)
+        setError(unknownError.message)
       }
     } finally {
       setLoading(false)
     }
   }
+  
+  const handleRetry = async () => {
+    // Re-check connection
+    const isHealthy = await checkBackendHealth()
+    setConnectionStatus(isHealthy ? 'online' : 'offline')
+    
+    if (isHealthy) {
+      // Retry the last search
+      const syntheticEvent = { preventDefault: () => {} }
+      await handleNlqSubmit(syntheticEvent)
+    }
+  }
+
+  const isEmpty = !nlq.trim() && !parse && recents.length === 0
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
       <div className="text-center">
-        <h1 className="text-3xl sm:text-4xl font-semibold text-text mb-4">
+        <h1 className="text-4xl sm:text-5xl font-bold text-ink-900 mb-4 tracking-tight">
           {COPY.home.title}
         </h1>
-        <p className="text-lg sm:text-xl text-text-muted mb-8">
+        <p className="text-xl sm:text-2xl text-ink-700 mb-12 max-w-2xl mx-auto">
           {COPY.home.subtitle}
         </p>
         
         {/* NLQ Input - Primary Action */}
-        <div className="max-w-2xl mx-auto mb-6">
-          <form onSubmit={handleNlqSubmit} className="space-y-4">
+        <div className="max-w-2xl mx-auto mb-8">
+          <form onSubmit={handleNlqSubmit} className="space-y-5">
             <div className="relative">
               <input
                 ref={nlqInputRef}
@@ -146,26 +214,28 @@ export default function Home() {
                 onChange={(e) => handleNlqChange(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={COPY.home.nlqPlaceholder}
-                className="w-full px-4 py-3 border border-border rounded-lg bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+                className="w-full px-5 py-4 border-2 border-border rounded-xl bg-bg text-ink-900 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-lg shadow-sm transition-all duration-200 placeholder:text-ink-500"
                 aria-label={COPY.home.nlqLabel}
                 autoFocus
               />
               {parse?.intent && (
-                <div className="absolute right-2 top-2">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   <IntentChip intent={parse.intent} confidence={parse.confidence} />
                 </div>
               )}
             </div>
             
-            {/* Inline parse preview */}
+            {/* Inline parse preview - animated entrance */}
             {parse && (
-              <ParsePreview
-                parse={parse}
-                onSelectIntent={(intent) => {
-                  setParse({ ...parse, intent, needs_disambiguation: false })
-                }}
-                onConfirm={handleNlqSubmit}
-              />
+              <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <ParsePreview
+                  parse={parse}
+                  onSelectIntent={(intent) => {
+                    setParse({ ...parse, intent, needs_disambiguation: false })
+                  }}
+                  onConfirm={handleNlqSubmit}
+                />
+              </div>
             )}
             
             {/* NLQ hint if missing locator */}
@@ -181,38 +251,79 @@ export default function Home() {
               </div>
             )}
             
-            {error && (
+            {/* Error display with retry */}
+            {apiError && (
+              <ErrorDisplay 
+                error={apiError} 
+                onRetry={handleRetry}
+              />
+            )}
+            
+            {error && !apiError && (
               <p className="text-sm text-red-600" role="alert">
                 {error}
               </p>
             )}
             
+            {/* Primary CTA - Always visible and enabled */}
             <Button
               type="submit"
-              disabled={loading || !parse?.intent}
-              className="w-full text-lg py-3"
+              disabled={loading}
+              className="w-full text-lg py-3.5 font-semibold shadow-sm hover:shadow-md transition-all duration-200"
               onClick={() => {
                 if (typeof window !== 'undefined' && window.__telem_track) {
                   window.__telem_track('cta_primary', {
-                    cta_type: 'search',
+                    cta_type: parse?.intent ? 'search' : 'get_started',
                     surface: 'home',
                   })
                 }
               }}
             >
-              {loading ? COPY.home.searchingButton : COPY.home.searchButton}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {COPY.home.searchingButton}
+                </span>
+              ) : parse?.intent ? (
+                COPY.home.searchButton
+              ) : (
+                'Get Started'
+              )}
             </Button>
+            
+            {/* Helper text when no input */}
+            {!nlq.trim() && !parse?.intent && !loading && (
+              <p className="text-xs text-ink-600 text-center mt-2">
+                Type a question above or try an example below
+              </p>
+            )}
           </form>
           
-          {/* Example queries */}
-          <div className="mt-4">
-            <p className="text-sm text-gray-600 mb-2">{COPY.home.tryAsking}</p>
-            <div className="flex flex-wrap gap-2 justify-center">
+          {/* Advanced Search link - demoted */}
+          <div className="mt-4 text-center">
+            <Link 
+              to="/search" 
+              className="text-sm text-primary-700 hover:text-primary-800 underline focus-ring rounded-2"
+            >
+              {COPY.home.advancedSearchLink}
+            </Link>
+          </div>
+          
+          {/* Example queries - more prominent when empty */}
+          <div className={`mt-8 transition-opacity duration-300 ${isEmpty ? 'opacity-100' : 'opacity-60'}`}>
+            <p className="text-sm font-medium text-ink-700 mb-3">{COPY.home.tryAsking}</p>
+            <div className="flex flex-wrap gap-3 justify-center">
               {exampleQueries.map((example, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleNlqChange(example)}
-                  className="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
+                  onClick={() => {
+                    handleNlqChange(example)
+                    nlqInputRef.current?.focus()
+                  }}
+                  className="text-sm px-4 py-2 bg-white border border-border hover:border-primary-300 hover:bg-primary-50 rounded-lg text-ink-700 transition-all duration-200 focus-ring shadow-sm hover:shadow-md"
                 >
                   {example}
                 </button>
@@ -221,61 +332,33 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Advanced search link */}
-        <div className="flex justify-center mb-8">
-          <Link to="/search" className="text-sm text-primary-600 hover:text-primary-700 underline">
-            {COPY.home.advancedSearchLink}
-          </Link>
-        </div>
-        
-        {/* Recent searches */}
+        {/* Recent Searches */}
         {recents.length > 0 && (
-          <div className="max-w-2xl mx-auto mb-6">
-            <h2 className="text-lg font-semibold text-text mb-3">{COPY.home.recentSearchesTitle}</h2>
+          <div className="max-w-2xl mx-auto mt-12 pt-8 border-t border-border">
+            <h2 className="text-base font-semibold text-ink-900 mb-4">{COPY.home.recentSearchesTitle}</h2>
             <div className="space-y-2">
               {recents.map((recent, idx) => (
-                <button
+                <Link
                   key={idx}
-                  onClick={() => {
-                    setNlq(recent.query)
-                    handleNlqChange(recent.query)
-                  }}
-                  className="w-full text-left px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors"
+                  to={recent.deepLink || '/search'}
+                  className="block p-4 bg-white border border-border rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-all duration-200 focus-ring shadow-sm hover:shadow-md group"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">{recent.query}</span>
-                    {recent.intent && (
-                      <IntentChip intent={recent.intent} className="text-xs" />
-                    )}
+                    <div className="flex-1">
+                      <p className="text-sm text-ink-900 font-medium group-hover:text-primary-700 transition-colors">{recent.query}</p>
+                      {recent.intent && (
+                        <p className="text-xs text-ink-600 mt-1">{COPY.intent[recent.intent] || recent.intent}</p>
+                      )}
+                    </div>
+                    <svg className="w-5 h-5 text-ink-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   </div>
-                </button>
+                </Link>
               ))}
             </div>
           </div>
         )}
-      </div>
-      
-      <div className="mt-12 sm:mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card>
-          <h3 className="text-lg sm:text-xl font-semibold mb-2 text-text">Search by APN</h3>
-          <p className="text-sm sm:text-base text-text-muted">
-            Enter an Assessor's Parcel Number to get detailed zoning information.
-          </p>
-        </Card>
-        
-        <Card>
-          <h3 className="text-lg sm:text-xl font-semibold mb-2 text-text">Search by Location</h3>
-          <p className="text-sm sm:text-base text-text-muted">
-            Use latitude and longitude to find zoning for any location.
-          </p>
-        </Card>
-        
-        <Card className="sm:col-span-2 lg:col-span-1">
-          <h3 className="text-lg sm:text-xl font-semibold mb-2 text-text">Comprehensive Data</h3>
-          <p className="text-sm sm:text-base text-text-muted">
-            Get setbacks, height limits, FAR, lot coverage, and overlays.
-          </p>
-        </Card>
       </div>
     </div>
   )

@@ -30,7 +30,7 @@ export default function CodeModal({ answer, isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) return
 
-    const handleTab = (e: KeyboardEvent) => {
+    const handleTab = (e) => {
       if (e.key !== 'Tab') return
 
       const focusableElements = modalRef.current?.querySelectorAll(
@@ -56,7 +56,7 @@ export default function CodeModal({ answer, isOpen, onClose }) {
 
     closeButtonRef.current?.focus()
 
-    const handleEsc = (e: KeyboardEvent) => {
+    const handleEsc = (e) => {
       if (e.key === 'Escape') {
         onClose()
       }

@@ -176,7 +176,7 @@ export default function AnswerCard({ answer }) {
   )
 }
 
-function formatValue(value: number): string {
+function formatValue(value) {
   if (value >= 1000) {
     return value.toLocaleString()
   }

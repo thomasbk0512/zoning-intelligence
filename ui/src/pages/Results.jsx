@@ -72,16 +72,17 @@ export default function Results() {
       </div>
 
       <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-        <h1 className="text-2xl sm:text-3xl font-bold">Zoning Results</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold" data-testid="results-title">Zoning Results</h1>
         <div className="flex gap-2">
           <Button 
             variant="secondary" 
             onClick={() => window.print()}
             className="no-print"
+            data-testid="results-print-button"
           >
             Print
           </Button>
-          <Button variant="secondary" onClick={() => navigate('/search')}>
+          <Button variant="secondary" onClick={() => navigate('/search')} data-testid="results-new-search-button">
             New Search
           </Button>
         </div>
@@ -91,6 +92,7 @@ export default function Results() {
         role="region" 
         aria-label="Zoning results"
         className="space-y-6"
+        data-testid="results-content"
       >
         {/* Map with overlays */}
         <Card title="Map View">

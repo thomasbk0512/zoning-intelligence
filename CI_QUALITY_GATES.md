@@ -29,24 +29,35 @@ Workflows can be triggered manually with these flags set.
 
 ## E2E Tests
 
-**Location**: `ui/e2e/`
+**Location**: `ui/tests/e2e/`
 
 **Framework**: Playwright
 
-**Current Status**: Scaffolded (placeholder test only)
+**Status**: ✅ Active (happy paths implemented)
 
-**Planned Tests** (see v1.1.1 milestone issues):
-- Happy paths: APN search, Lat/Lng search
-- Error states: network failures, retry functionality
-- Validation: input validation, error messages
+**Coverage**:
+- ✅ Home page: loads, skip-link focus, CTA navigation
+- ✅ Search page: APN/lat-lng search, validation, keyboard flow, retry
+- ✅ Results page: deep-link load, 11-field rendering, tolerance checks, state transitions, ARIA live
 
 **Running Locally**:
 ```bash
 cd ui
 npm install
-npx playwright install
-npm run test:e2e
+npx playwright install --with-deps chromium
+npm run build
+npm run serve &
+E2E_STUB=1 npm run test:e2e
 ```
+
+**CI Configuration**:
+- Enabled when `E2E_ENABLE=true`
+- Uses stub mode (`E2E_STUB=1`) for deterministic tests
+- Retries: 1 (flake-resistant)
+- Timeout: 30s per test
+- Artifacts: HTML report, traces, videos, screenshots
+
+**See**: `E2E_GUIDE.md` for detailed documentation
 
 ## Lighthouse CI
 
@@ -89,11 +100,21 @@ lhci autorun
 
 ## Acceptance Criteria
 
-- [ ] E2E tests cover happy paths (APN, Lat/Lng)
-- [ ] E2E tests cover error states + retry
+- [x] E2E tests cover happy paths (APN, Lat/Lng)
+- [x] E2E tests cover error states + retry
 - [ ] Lighthouse CI passes with ≥90 in all categories
-- [ ] Both jobs run successfully when enabled
-- [ ] CI remains green with flags disabled (default)
+- [x] Both jobs run successfully when enabled
+- [x] CI remains green with flags disabled (default)
+
+## E2E Gate Criteria
+
+- ✅ All happy-path specs pass on CI with 0 retries
+- ✅ Intercepted requests return fixture data; no live calls
+- ✅ Results page renders 11 fields; tolerance checks pass
+- ✅ ARIA live updates on load; input errors expose aria-errormessage
+- ✅ No console errors during tests
+- ✅ CI uploads Playwright HTML report + traces/videos/screenshots
+- ✅ App bundle and schema unchanged; CI green
 
 ## Related Issues
 

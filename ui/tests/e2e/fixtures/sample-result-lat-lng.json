@@ -1,0 +1,28 @@
+{
+  "apn": "0204050713",
+  "jurisdiction": "Austin, TX",
+  "zone": "SF-2",
+  "setbacks_ft": {
+    "front": 30.0,
+    "side": 7.5,
+    "rear": 15.0,
+    "street_side": 0.0
+  },
+  "height_ft": 30,
+  "far": 0.35,
+  "lot_coverage_pct": 35,
+  "overlays": ["Historic"],
+  "sources": [
+    {
+      "type": "Zoning Code",
+      "cite": "Section 25-2-491"
+    },
+    {
+      "type": "Parcel Data",
+      "cite": "Travis County Appraisal District"
+    }
+  ],
+  "notes": "Historic overlay district",
+  "run_ms": 1456
+}
+

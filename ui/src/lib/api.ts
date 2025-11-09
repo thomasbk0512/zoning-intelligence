@@ -3,7 +3,11 @@ import { ZoningResult, SearchParams } from '../types'
 import { validateZoningResult } from './validate'
 import { getCacheKey, getCachedResult, setCachedResult } from './cache'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+// Stub mode for E2E tests (deterministic, no live network)
+const E2E_STUB = import.meta.env.VITE_E2E_STUB === '1' || import.meta.env.E2E_STUB === '1'
+const BASE_URL = E2E_STUB 
+  ? 'http://localhost:4173' // Stub endpoint (handled by Playwright route interception)
+  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000')
 
 const api = axios.create({
   baseURL: BASE_URL,

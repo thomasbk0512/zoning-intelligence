@@ -90,7 +90,7 @@ export default function Search() {
       <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Search Property</h1>
       
       <Card>
-        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate data-testid="search-form">
           <Tabs
             value={searchType}
             onChange={(value) => setSearchType(value as SearchType)}
@@ -111,6 +111,7 @@ export default function Search() {
               required
               error={error && searchType === 'apn' ? error : undefined}
               aria-describedby="apn-help"
+              data-testid="search-input-apn"
             />
           ) : (
             <div className="space-y-4">
@@ -124,6 +125,7 @@ export default function Search() {
                 placeholder="30.2672"
                 required
                 error={error && searchType === 'location' ? error : undefined}
+                data-testid="search-input-latitude"
               />
               <Input
                 id="longitude"
@@ -134,6 +136,7 @@ export default function Search() {
                 onChange={(e) => setLongitude(e.target.value)}
                 placeholder="-97.7431"
                 required
+                data-testid="search-input-longitude"
               />
             </div>
           )}
@@ -163,7 +166,7 @@ export default function Search() {
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg" role="alert" aria-live="assertive" aria-atomic="true" data-testid="search-error">
               <p className="text-sm text-red-800 mb-3">{error}</p>
               <Button
                 type="button"
@@ -171,6 +174,7 @@ export default function Search() {
                 disabled={loading}
                 variant="secondary"
                 className="w-full"
+                data-testid="search-retry-button"
               >
                 Retry Search
               </Button>
@@ -181,6 +185,7 @@ export default function Search() {
             type="submit"
             disabled={loading}
             className="w-full"
+            data-testid="search-submit-button"
           >
             {loading ? 'Searching...' : 'Search'}
           </Button>

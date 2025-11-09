@@ -14,7 +14,7 @@ export default function Home() {
         </p>
         
         <div className="flex justify-center gap-4">
-          <Link to="/search">
+          <Link to="/search" data-testid="home-cta-search">
             <Button className="text-base sm:text-lg px-6 sm:px-8 py-3">
               Search Property
             </Button>

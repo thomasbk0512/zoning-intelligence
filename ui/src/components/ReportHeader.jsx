@@ -3,16 +3,9 @@ import JurisdictionBadge from './JurisdictionBadge'
 import { getJurisdictionById } from '../engine/juris/resolve'
 import { getBuildInfo } from '../lib/buildInfo'
 
-interface ReportHeaderProps {
-  apn?: string
-  jurisdiction: string
-  zone: string
-  className?: string
-}
-
-export default function ReportHeader({ apn, jurisdiction, zone, className = '' }: ReportHeaderProps) {
-  const [jurisInfo, setJurisInfo] = useState<any>(null)
-  const [buildInfo, setBuildInfo] = useState<any>(null)
+export default function ReportHeader({ apn, jurisdiction, zone, className = '' }) {
+  const [jurisInfo, setJurisInfo] = useState(null)
+  const [buildInfo, setBuildInfo] = useState(null)
 
   useEffect(() => {
     // Load jurisdiction info

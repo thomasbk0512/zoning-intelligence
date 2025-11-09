@@ -2,22 +2,10 @@ import { useState } from 'react'
 import Card from './Card'
 import Button from './Button'
 import CodeModal from './CodeModal'
-import { type ZoningAnswer } from '../engine/answers/rules'
 
-interface ConflictNoticeProps {
-  answer: ZoningAnswer
-  conflictSources?: Array<{
-    type: string
-    id?: string
-    value: number
-    unit: string
-    citations: Array<{ code_id: string; section: string; anchor?: string }>
-  }>
-}
-
-export default function ConflictNotice({ answer, conflictSources }: ConflictNoticeProps) {
+export default function ConflictNotice({ answer, conflictSources }) {
   const [codeModalOpen, setCodeModalOpen] = useState(false)
-  const [selectedCitation, setSelectedCitation] = useState<any>(null)
+  const [selectedCitation, setSelectedCitation] = useState(null)
 
   if (!conflictSources || conflictSources.length === 0) {
     return null

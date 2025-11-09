@@ -1,23 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
 import Button from './Button'
-import { buildPermalink, copyToClipboard, type ShareParams } from '../lib/share'
+import { buildPermalink, copyToClipboard } from '../lib/share'
 
-interface ShareMenuProps {
-  params: ShareParams
-  onShare?: (method: 'link' | 'print') => void
-}
-
-export default function ShareMenu({ params, onShare }: ShareMenuProps) {
+export default function ShareMenu({ params, onShare }) {
   const [isOpen, setIsOpen] = useState(false)
   const [copied, setCopied] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef(null)
 
   // Close menu on outside click
   useEffect(() => {
     if (!isOpen) return
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsOpen(false)
       }
     }
@@ -35,8 +30,8 @@ export default function ShareMenu({ params, onShare }: ShareMenuProps) {
       setTimeout(() => setCopied(false), 2000)
       
       // Track telemetry
-      if (typeof window !== 'undefined' && (window as any).__telem_track) {
-        ;(window as any).__telem_track('report_shared', {
+      if (typeof window !== 'undefined' && window.__telem_track) {
+        window.__telem_track('report_shared', {
           method: 'link',
         })
       }
@@ -47,8 +42,8 @@ export default function ShareMenu({ params, onShare }: ShareMenuProps) {
 
   const handlePrint = () => {
     // Track telemetry
-    if (typeof window !== 'undefined' && (window as any).__telem_track) {
-      ;(window as any).__telem_track('report_shared', {
+    if (typeof window !== 'undefined' && window.__telem_track) {
+      window.__telem_track('report_shared', {
         method: 'print',
       })
     }

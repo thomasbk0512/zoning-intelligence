@@ -2,20 +2,15 @@ import { useEffect, useRef } from 'react'
 import Button from './Button'
 import Card from './Card'
 
-interface HelpPanelProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-export default function HelpPanel({ isOpen, onClose }: HelpPanelProps) {
-  const panelRef = useRef<HTMLDivElement>(null)
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
+export default function HelpPanel({ isOpen, onClose }) {
+  const panelRef = useRef(null)
+  const closeButtonRef = useRef(null)
 
   // Focus trap
   useEffect(() => {
     if (!isOpen) return
 
-    const handleTab = (e: KeyboardEvent) => {
+    const handleTab = (e) => {
       if (e.key !== 'Tab') return
 
       const focusableElements = panelRef.current?.querySelectorAll(
@@ -23,8 +18,8 @@ export default function HelpPanel({ isOpen, onClose }: HelpPanelProps) {
       )
       if (!focusableElements || focusableElements.length === 0) return
 
-      const firstElement = focusableElements[0] as HTMLElement
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -43,7 +38,7 @@ export default function HelpPanel({ isOpen, onClose }: HelpPanelProps) {
     closeButtonRef.current?.focus()
 
     // Handle Esc key
-    const handleEsc = (e: KeyboardEvent) => {
+    const handleEsc = (e) => {
       if (e.key === 'Escape') {
         onClose()
       }

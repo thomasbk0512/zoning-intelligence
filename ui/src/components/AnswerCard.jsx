@@ -5,15 +5,8 @@ import CodeModal from './CodeModal'
 import SourceList from './SourceList'
 import FeedbackSheet from './FeedbackSheet'
 import TraceModal from './TraceModal'
-import { type ZoningAnswer } from '../engine/answers/rules'
-import { type AnswerTrace } from '../engine/answers/trace'
-import { type CitationWithVersion } from '../engine/answers/citations'
 
-interface AnswerCardProps {
-  answer: ZoningAnswer
-}
-
-const intentLabels: Record<string, string> = {
+const intentLabels = {
   front_setback: 'Front Setback',
   side_setback: 'Side Setback',
   rear_setback: 'Rear Setback',
@@ -22,12 +15,12 @@ const intentLabels: Record<string, string> = {
   min_lot_size: 'Minimum Lot Size',
 }
 
-export default function AnswerCard({ answer }: AnswerCardProps) {
+export default function AnswerCard({ answer }) {
   const [codeModalOpen, setCodeModalOpen] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
   const [traceModalOpen, setTraceModalOpen] = useState(false)
   
-  const trace = (answer as any).trace as AnswerTrace | undefined
+  const trace = answer.trace
 
   const label = intentLabels[answer.intent] || answer.intent
   const cardId = `answer-card-${answer.intent}`
@@ -36,7 +29,7 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
   const hasException = answer.provenance === 'exception'
   
   // Get version from first citation if available
-  const firstCitation = answer.citations[0] as CitationWithVersion | undefined
+  const firstCitation = answer.citations[0]
   const version = firstCitation?.version
 
   return (
@@ -164,8 +157,8 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
           onClose={() => setFeedbackOpen(false)}
           onSubmit={(feedback) => {
             // Track feedback via telemetry
-            if (typeof window !== 'undefined' && (window as any).__telem_track) {
-              ;(window as any).__telem_track('answer_feedback', feedback)
+            if (typeof window !== 'undefined' && window.__telem_track) {
+              window.__telem_track('answer_feedback', feedback)
             }
           }}
         />

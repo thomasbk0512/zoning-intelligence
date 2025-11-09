@@ -1,8 +1,8 @@
 {
-  "timestamp": "2025-11-09T15:06:46.923Z",
+  "timestamp": "2025-11-09T15:07:04.155Z",
   "pairs_checked": 16,
-  "failures": 3,
-  "min_ratio_found": "1.24",
+  "failures": 1,
+  "min_ratio_found": "1.47",
   "results": [
     {
       "name": "Body text on white",
@@ -94,9 +94,9 @@
     },
     {
       "name": "Input border",
-      "text": "#E5E7EB",
+      "text": "#D1D5DB",
       "bg": "#FFFFFF",
-      "ratio": "1.24",
+      "ratio": "1.47",
       "required": 3,
       "pass": false
     },
@@ -118,19 +118,19 @@
     },
     {
       "name": "Error text on white",
-      "text": "#EF4444",
+      "text": "#DC2626",
       "bg": "#FFFFFF",
-      "ratio": "3.76",
+      "ratio": "4.83",
       "required": 4.5,
-      "pass": false
+      "pass": true
     },
     {
       "name": "Error text on surface",
-      "text": "#EF4444",
+      "text": "#DC2626",
       "bg": "#F8FAFC",
-      "ratio": "3.60",
+      "ratio": "4.62",
       "required": 4.5,
-      "pass": false
+      "pass": true
     }
   ]
 }

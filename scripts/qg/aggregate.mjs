@@ -198,7 +198,7 @@ if (!summary.gates.telemetry_schema_validation_pass) {
   summary.errors.push('Telemetry: Schema validation failed or file not found')
 }
 
-// 6. Bundle size check (from Lighthouse budget)
+// 7. Bundle size check (from Lighthouse budget)
 // This is handled by Lighthouse assertions, but we can extract it
 if (summary.gates.lh && Object.keys(summary.gates.lh).length > 0) {
   // Bundle size is enforced via Lighthouse budget assertions

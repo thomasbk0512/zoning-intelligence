@@ -17,6 +17,8 @@ export default defineConfig({
     loader: 'tsx',
     include: /src\/.*\.[jt]sx?$/,
     exclude: []
-  }
+  },
+  publicDir: 'public',
+  // Copy golden fixtures to dist for stub mode
+  assetsInclude: ['**/*.json'],
 })
-

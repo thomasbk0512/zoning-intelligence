@@ -14,6 +14,8 @@ export type TelemetryEvent =
   | ResultsRenderEvent
   | ErrorShownEvent
   | WebVitalsEvent
+  | AnswerRenderEvent
+  | CitationOpenedEvent
 
 export interface BaseEvent {
   event_type: string
@@ -61,6 +63,17 @@ export interface WebVitalsEvent extends BaseEvent {
   metric: 'FCP' | 'LCP' | 'CLS' | 'INP' | 'TTFB'
   value: number
   rating: 'good' | 'needs-improvement' | 'poor'
+}
+
+export interface AnswerRenderEvent extends BaseEvent {
+  event_type: 'answer_render'
+  intents_count: number
+  ms_total: number
+}
+
+export interface CitationOpenedEvent extends BaseEvent {
+  event_type: 'citation_opened'
+  code_id: string
 }
 
 /**

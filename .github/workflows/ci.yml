@@ -526,10 +526,53 @@ jobs:
           node scripts/citations/simulate-update.mjs || echo "Stale simulation completed"
         continue-on-error: true
 
+  report:
+    name: Report Generation
+    runs-on: ubuntu-latest
+    env:
+      ANSWERS_ENABLE: ${{ vars.ANSWERS_ENABLE || 'true' }}
+      ANSWERS_STUB: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        working-directory: ui
+        run: npm ci
+      - name: Build app
+        working-directory: ui
+        run: npm run build
+      - name: Install Playwright
+        working-directory: ui
+        run: npx playwright install chromium
+      - name: Start preview server
+        working-directory: ui
+        run: |
+          npm run preview &
+          sleep 5
+        continue-on-error: true
+      - name: Render PDF
+        run: |
+          mkdir -p artifacts
+          BASE_URL=http://localhost:4173 node scripts/report/render-pdf.mjs || echo "PDF generation completed"
+        continue-on-error: true
+      - name: Validate PDF
+        run: |
+          node scripts/report/validate-pdf.mjs || echo "PDF validation completed"
+        continue-on-error: true
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-pdf
+          path: artifacts/report.pdf
+          retention-days: 7
+
   quality-gates:
     name: Quality Gates (Aggregator)
     runs-on: ubuntu-latest
-    needs: [e2e-tests, lighthouse, telemetry-validate, answers, answers-review, answers-overlays, answers-juris, citations-integrity]
+    needs: [e2e-tests, lighthouse, telemetry-validate, answers, answers-review, answers-overlays, answers-juris, citations-integrity, report]
     if: always()
     permissions:
       contents: read

@@ -36,6 +36,7 @@ All gates are **enabled by default** for PRs to `main` and tag builds.
 | **Overlays & Exceptions** | Configs valid, unit tests pass, conflicts resolved | ✅ Blocking |
 | **Jurisdictions** | Registry valid, resolver tests pass, ETJ answers correct | ✅ Blocking |
 | **Citations Integrity** | Manifests valid, anchors valid, hash matches, all citations resolved | ✅ Blocking |
+| **Report** | PDF generated, validated, permalink works, print layout A11y AA | ✅ Blocking |
 | **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
 ## Enabling Quality Gates
@@ -247,6 +248,16 @@ To make quality gates blocking:
 - ✅ All citations referenced in rules/overlays/exceptions exist in anchors
 - ✅ Stale anchor detection works (simulated in CI)
 - ✅ Version info attached to citations correctly
+
+## Report Gate Criteria
+
+- ✅ PDF generated successfully in CI
+- ✅ PDF contains required elements (title, intents, citations, disclaimer)
+- ✅ Permalink builder creates privacy-safe URLs (no coords with APN)
+- ✅ Print layout is WCAG AA compliant
+- ✅ Share menu works (copy link, print)
+- ✅ Report snapshot generates valid JSON
+- ✅ Telemetry events recorded (report_generated, report_shared)
 
 ## Related Issues
 

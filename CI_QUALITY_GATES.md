@@ -50,18 +50,26 @@ npm run test:e2e
 
 ## Lighthouse CI
 
-**Config**: `ui/.lighthouserc.json`
+**Config**: `ui/lighthouserc.json`
 
-**Targets**: ≥90 in all categories
-- Performance
-- Accessibility
-- Best Practices
-- SEO
+**Targets** (Mobile Emulation):
+- **Performance**: ≥90
+- **Accessibility**: ≥95 (from UX-103)
+- **Best Practices**: ≥90
+- **SEO**: ≥90
+
+**Core Web Vitals**:
+- **LCP** (Largest Contentful Paint): ≤2.5s
+- **CLS** (Cumulative Layout Shift): ≤0.10
+- **TBT** (Total Blocking Time): ≤200ms
+- **FCP** (First Contentful Paint): ≤2.0s
+- **Speed Index**: ≤3.4s
+- **TTI** (Time to Interactive): ≤3.8s
 
 **Pages Tested**:
 - `/` (Home)
 - `/search` (Search)
-- `/results` (Results)
+- `/results` (Results with sample query)
 
 **Running Locally**:
 ```bash
@@ -69,9 +77,15 @@ cd ui
 npm install
 npm install -g @lhci/cli
 npm run build
-npm run preview &
+npm run serve &
+# Wait for "Serving!" message
 lhci autorun
 ```
+
+**Artifacts**:
+- Reports saved to `ui/.lighthouseci/`
+- Uploaded as `lighthouse-reports` artifact in CI
+- Retention: 7 days
 
 ## Acceptance Criteria
 

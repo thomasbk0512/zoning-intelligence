@@ -13,6 +13,14 @@ const api = axios.create({
   },
 })
 
+// Defer API initialization to avoid blocking initial render
+if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+  requestIdleCallback(() => {
+    // Warm up API connection
+    api.get('/health').catch(() => {})
+  })
+}
+
 export class APIError extends Error {
   constructor(
     message: string,

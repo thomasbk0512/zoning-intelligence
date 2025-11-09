@@ -124,6 +124,41 @@ try {
           },
         ],
       },
+      answerFeedbackEvent: {
+        allOf: [
+          { $ref: '#/definitions/baseEvent' },
+          {
+            type: 'object',
+            required: ['event_type', 'answer_id', 'intent', 'district', 'vote', 'has_proposed'],
+            properties: {
+              event_type: { const: 'answer_feedback' },
+              answer_id: { type: 'string' },
+              intent: { enum: ['front_setback', 'side_setback', 'rear_setback', 'max_height', 'lot_coverage', 'min_lot_size'] },
+              district: { type: 'string' },
+              vote: { enum: ['up', 'down'] },
+              reason: { type: 'string', maxLength: 120 },
+              has_proposed: { type: 'boolean' },
+              proposed: {
+                type: 'object',
+                required: ['value', 'unit', 'citation'],
+                properties: {
+                  value: { type: 'number' },
+                  unit: { type: 'string', maxLength: 12 },
+                  citation: {
+                    type: 'object',
+                    required: ['code_id', 'section', 'anchor'],
+                    properties: {
+                      code_id: { type: 'string' },
+                      section: { type: 'string' },
+                      anchor: { type: 'string' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
     },
     oneOf: [
       { $ref: '#/definitions/pageViewEvent' },
@@ -132,6 +167,7 @@ try {
       { $ref: '#/definitions/resultsRenderEvent' },
       { $ref: '#/definitions/errorShownEvent' },
       { $ref: '#/definitions/webVitalsEvent' },
+      { $ref: '#/definitions/answerFeedbackEvent' },
     ],
   }
 } catch (error) {

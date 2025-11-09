@@ -1,3 +1,5 @@
+[![CI](https://github.com/thomasbk0512/zoning-intelligence/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/thomasbk0512/zoning-intelligence/actions/workflows/ci.yml)
+
 UI v1.0.1 – ready for PR
 # Zoning Intelligence CLI - MVP
 

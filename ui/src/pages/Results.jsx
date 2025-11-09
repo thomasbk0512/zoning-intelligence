@@ -10,10 +10,15 @@ import AnswerCard from '../components/AnswerCard'
 import ConflictNotice from '../components/ConflictNotice'
 import JurisdictionBadge from '../components/JurisdictionBadge'
 import VersionNotice from '../components/VersionNotice'
+import ReportHeader from '../components/ReportHeader'
+import ReportFooter from '../components/ReportFooter'
+import ShareMenu from '../components/ShareMenu'
 import { getAnswers } from '../lib/answers'
+import { generateReportSnapshot } from '../lib/report'
 import { resolveFromAPN, resolveFromLatLng, getJurisdictionById } from '../engine/juris/resolve'
 import type { ZoningResult } from '../types'
 import type { AnswersResponse } from '../lib/answers'
+import type { ShareParams } from '../lib/share'
 
 export default function Results() {
   const location = useLocation()
@@ -146,6 +151,31 @@ export default function Results() {
       <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
         <h1 className="text-2xl sm:text-3xl font-semibold text-text">Zoning Results</h1>
         <div className="flex gap-2">
+          {result && (
+            <ShareMenu
+              params={{
+                type: result.apn ? 'apn' : 'latlng',
+                apn: result.apn,
+                latitude: result.latitude,
+                longitude: result.longitude,
+                city: result.jurisdiction.toLowerCase().includes('austin') ? 'austin' : 'austin',
+                zone: result.zone,
+                jurisdictionId: jurisdiction?.id,
+              }}
+              onShare={(method) => {
+                // Track report generation on share
+                if (answers && typeof window !== 'undefined' && (window as any).__telem_track) {
+                  const hasConflicts = answers.answers.some(a => a.status === 'needs_review')
+                  const jurisdictionId = jurisdiction?.id || 'austin'
+                  ;(window as any).__telem_track('report_generated', {
+                    intents_count: answers.answers.length,
+                    has_conflicts: hasConflicts,
+                    jurisdiction: jurisdictionId,
+                  })
+                }
+              }}
+            />
+          )}
           <Button 
             variant="secondary" 
             onClick={() => window.print()}
@@ -157,6 +187,15 @@ export default function Results() {
             New Search
           </Button>
         </div>
+      </div>
+      
+      {/* Print-only header */}
+      <div className="hidden print:block">
+        <ReportHeader
+          apn={result.apn}
+          jurisdiction={result.jurisdiction}
+          zone={result.zone}
+        />
       </div>
       
       <div 
@@ -326,6 +365,11 @@ export default function Results() {
           isOpen={sourcesFlyoutOpen}
           onClose={() => setSourcesFlyoutOpen(false)}
         />
+      </div>
+      
+      {/* Print-only footer */}
+      <div className="hidden print:block mt-8">
+        <ReportFooter jurisdictionId={jurisdiction?.id} />
       </div>
     </div>
   )

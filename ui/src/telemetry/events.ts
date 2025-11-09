@@ -19,6 +19,8 @@ export type TelemetryEvent =
   | AnswerFeedbackEvent
   | AnswerResolvedEvent
   | JurisdictionResolvedEvent
+  | ReportGeneratedEvent
+  | ReportSharedEvent
 
 export interface BaseEvent {
   event_type: string
@@ -112,6 +114,18 @@ export interface JurisdictionResolvedEvent extends BaseEvent {
   jurisdiction_id: string
   resolver: 'apn' | 'latlng' | 'stub'
   district: string
+}
+
+export interface ReportGeneratedEvent extends BaseEvent {
+  event_type: 'report_generated'
+  intents_count: number
+  has_conflicts: boolean
+  jurisdiction: string
+}
+
+export interface ReportSharedEvent extends BaseEvent {
+  event_type: 'report_shared'
+  method: 'link' | 'print'
 }
 
 /**

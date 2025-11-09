@@ -366,6 +366,11 @@ export default function Results() {
           onClose={() => setSourcesFlyoutOpen(false)}
         />
       </div>
+      
+      {/* Print-only footer */}
+      <div className="hidden print:block mt-8">
+        <ReportFooter jurisdictionId={jurisdiction?.id} />
+      </div>
     </div>
   )
 }

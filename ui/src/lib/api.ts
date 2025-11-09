@@ -51,9 +51,11 @@ export async function getZoningByAPN(
   }
 
   try {
+    const fetchStart = performance.now()
     const response = await api.get<ZoningResult>('/zoning', {
       params: { apn, city },
     })
+    const fetchMs = Math.round(performance.now() - fetchStart)
     
     if (!validateZoningResult(response.data)) {
       throw new APIError('Invalid response schema from API')
@@ -61,6 +63,9 @@ export async function getZoningByAPN(
     
     // Cache the result
     setCachedResult(cacheKey, response.data)
+    
+    // Store fetch timing for telemetry
+    ;(response.data as any).__fetch_ms = fetchMs
     
     return response.data
   } catch (error) {
@@ -113,9 +118,11 @@ export async function getZoningByLatLng(
   }
 
   try {
+    const fetchStart = performance.now()
     const response = await api.get<ZoningResult>('/zoning', {
       params: { latitude, longitude, city },
     })
+    const fetchMs = Math.round(performance.now() - fetchStart)
     
     if (!validateZoningResult(response.data)) {
       throw new APIError('Invalid response schema from API')
@@ -123,6 +130,9 @@ export async function getZoningByLatLng(
     
     // Cache the result
     setCachedResult(cacheKey, response.data)
+    
+    // Store fetch timing for telemetry
+    ;(response.data as any).__fetch_ms = fetchMs
     
     return response.data
   } catch (error) {

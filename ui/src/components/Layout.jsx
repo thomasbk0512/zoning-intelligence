@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { ReactNode } from 'react'
+import { usePageViewTracking } from '../hooks/useTelemetry'
 
 interface LayoutProps {
   children: ReactNode
@@ -7,6 +8,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  usePageViewTracking() // Track page views on route changes
   
   return (
     <div className="min-h-screen flex flex-col">

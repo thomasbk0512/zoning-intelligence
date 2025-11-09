@@ -5,6 +5,7 @@ import Input from '../components/Input'
 import Button from '../components/Button'
 import Card from '../components/Card'
 import { getZoningByAPN, getZoningByLatLng, APIError } from '../lib/api'
+import { trackSearchSubmit, trackValidationError, trackErrorShown } from '../hooks/useTelemetry'
 import type { ZoningResult, SearchType } from '../types'
 
 export default function Search() {
@@ -44,9 +45,12 @@ export default function Search() {
       if (searchType === 'apn') {
         if (!apn.trim()) {
           setError('APN is required')
+          trackValidationError('apn', 'required')
+          trackSearchSubmit('apn', apn, false)
           setLoading(false)
           return
         }
+        trackSearchSubmit('apn', apn.trim(), true)
         result = await getZoningByAPN(apn.trim(), city)
       } else {
         const lat = parseFloat(latitude)
@@ -54,22 +58,29 @@ export default function Search() {
         
         if (isNaN(lat) || isNaN(lng)) {
           setError('Valid latitude and longitude are required')
+          trackValidationError('lat', 'format')
+          trackSearchSubmit('latlng', `${latitude},${longitude}`, false)
           setLoading(false)
           return
         }
         
         if (lat < -90 || lat > 90) {
           setError('Latitude must be between -90 and 90')
+          trackValidationError('lat', 'range')
+          trackSearchSubmit('latlng', `${latitude},${longitude}`, false)
           setLoading(false)
           return
         }
         
         if (lng < -180 || lng > 180) {
           setError('Longitude must be between -180 and 180')
+          trackValidationError('lng', 'range')
+          trackSearchSubmit('latlng', `${latitude},${longitude}`, false)
           setLoading(false)
           return
         }
         
+        trackSearchSubmit('latlng', `${latitude},${longitude}`, true)
         result = await getZoningByLatLng(lat, lng, city)
       }
 
@@ -77,8 +88,16 @@ export default function Search() {
     } catch (err) {
       if (err instanceof APIError) {
         setError(err.message)
+        // Track error with appropriate code
+        const errorCode = err.statusCode 
+          ? `HTTP_${err.statusCode}` 
+          : err.isNetworkError 
+            ? 'NETWORK_ERROR' 
+            : 'API_ERROR'
+        trackErrorShown('search', errorCode)
       } else {
         setError('An unexpected error occurred. Please try again.')
+        trackErrorShown('search', 'UNKNOWN_ERROR')
       }
     } finally {
       setLoading(false)

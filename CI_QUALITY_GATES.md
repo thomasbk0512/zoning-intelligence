@@ -98,6 +98,43 @@ lhci autorun
 - Uploaded as `lighthouse-reports` artifact in CI
 - Retention: 7 days
 
+## Telemetry Validation
+
+**Location**: `ui/scripts/telemetry/validate.mjs`
+
+**Status**: ✅ Active
+
+**Coverage**:
+- ✅ Event schema validation (JSON Schema via ajv)
+- ✅ PII safety checks (no raw queries, APNs, coordinates)
+- ✅ Event counts verification (minimum thresholds)
+- ✅ Web Vitals capture (LCP, CLS, INP, FCP, TTFB)
+
+**Running Locally**:
+```bash
+cd ui
+npm run build
+npm run serve &
+npm run test:e2e tests/e2e/telemetry.spec.ts
+node scripts/telemetry/validate.mjs artifacts/telemetry.ndjson
+```
+
+**CI Configuration**:
+- Enabled by default (`TELEM_ENABLE=true`)
+- Uses console transport (no outbound network)
+- Validates events against JSON Schema
+- Uploads `telemetry.ndjson` as artifact
+
+**Event Types**:
+- `page_view` - Page navigation events
+- `search_submit` - Search form submissions
+- `validation_error` - Form validation errors
+- `results_render` - Results page renders
+- `error_shown` - Error states
+- `web_vitals` - Core Web Vitals metrics
+
+**See**: `UX_TELEMETRY.md` for detailed documentation
+
 ## Acceptance Criteria
 
 - [x] E2E tests cover happy paths (APN, Lat/Lng)
@@ -105,6 +142,7 @@ lhci autorun
 - [ ] Lighthouse CI passes with ≥90 in all categories
 - [x] Both jobs run successfully when enabled
 - [x] CI remains green with flags disabled (default)
+- [x] Telemetry validation passes (schema + PII checks)
 
 ## E2E Gate Criteria
 
@@ -115,6 +153,15 @@ lhci autorun
 - ✅ No console errors during tests
 - ✅ CI uploads Playwright HTML report + traces/videos/screenshots
 - ✅ App bundle and schema unchanged; CI green
+
+## Telemetry Gate Criteria
+
+- ✅ All events validate against JSON Schema (0 errors)
+- ✅ PII safety: no raw queries, APNs, or coordinates in payloads
+- ✅ Minimum event counts: ≥1 page_view, ≥1 search_submit, ≥1 results_render, ≥2 web_vitals
+- ✅ Event structure: all required fields present, types correct
+- ✅ CI uploads telemetry.ndjson artifact
+- ✅ No performance regression (Lighthouse budgets maintained)
 
 ## Related Issues
 

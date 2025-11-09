@@ -1,30 +1,56 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Card from '../components/Card'
 import KeyValue from '../components/KeyValue'
 import Button from '../components/Button'
 import { SkeletonCard } from '../components/Skeleton'
 import SourcesFlyout from '../components/SourcesFlyout'
 import Map from '../components/Map'
+import { trackResultsRender, trackErrorShown } from '../hooks/useTelemetry'
 import type { ZoningResult } from '../types'
 
 export default function Results() {
   const location = useLocation()
   const navigate = useNavigate()
-  const result = location.state?.result as ZoningResult | undefined
+  const result = location.state?.result as (ZoningResult & { __fetch_ms?: number }) | undefined
   const [loading, setLoading] = useState(!result)
   const [announcement, setAnnouncement] = useState('')
   const [sourcesFlyoutOpen, setSourcesFlyoutOpen] = useState(false)
+  const renderStartRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (result) {
       setLoading(false)
+      renderStartRef.current = performance.now()
       // Announce results with key information
       setAnnouncement(`Zoning results loaded for APN ${result.apn}. Zone: ${result.zone}. Height limit: ${result.height_ft} feet. FAR: ${result.far}.`)
     } else if (loading) {
       setAnnouncement('Loading zoning results...')
     }
   }, [result, loading])
+
+  // Track results render after component mounts
+  useEffect(() => {
+    if (result && renderStartRef.current !== null) {
+      const renderMs = Math.round(performance.now() - renderStartRef.current)
+      const fetchMs = result.__fetch_ms || 0
+      
+      // Count schema fields (11 expected)
+      const schemaFields = [
+        'apn', 'jurisdiction', 'zone',
+        'setbacks_ft', 'height_ft', 'far', 'lot_coverage_pct',
+        'overlays', 'sources', 'notes', 'run_ms'
+      ].filter(field => {
+        if (field === 'setbacks_ft') {
+          return result.setbacks_ft && typeof result.setbacks_ft === 'object'
+        }
+        return (result as any)[field] !== undefined
+      }).length
+
+      trackResultsRender(1, fetchMs, renderMs, schemaFields)
+      renderStartRef.current = null
+    }
+  }, [result])
 
   if (loading) {
     return (
@@ -40,6 +66,13 @@ export default function Results() {
       </div>
     )
   }
+
+  // Track error if no result
+  useEffect(() => {
+    if (!result && !loading) {
+      trackErrorShown('results', 'NO_RESULTS')
+    }
+  }, [result, loading])
 
   if (!result) {
     return (

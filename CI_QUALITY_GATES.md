@@ -233,6 +233,7 @@ To make quality gates blocking:
 - ✅ Event structure: all required fields present, types correct
 - ✅ CI uploads telemetry.ndjson artifact
 - ✅ No performance regression (Lighthouse budgets maintained)
+- ✅ Feedback events (`answer_feedback`) validated if present
 
 ## Related Issues
 

@@ -1,8 +1,8 @@
 {
-  "timestamp": "2025-11-09T15:07:20.698Z",
+  "timestamp": "2025-11-09T15:07:34.430Z",
   "pairs_checked": 16,
-  "failures": 1,
-  "min_ratio_found": "2.54",
+  "failures": 0,
+  "min_ratio_found": "4.62",
   "results": [
     {
       "name": "Body text on white",
@@ -94,11 +94,11 @@
     },
     {
       "name": "Input border",
-      "text": "#9CA3AF",
+      "text": "#6B7280",
       "bg": "#FFFFFF",
-      "ratio": "2.54",
+      "ratio": "4.83",
       "required": 3,
-      "pass": false
+      "pass": true
     },
     {
       "name": "Focus ring on white",

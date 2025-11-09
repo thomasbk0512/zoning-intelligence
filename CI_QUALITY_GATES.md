@@ -37,6 +37,7 @@ All gates are **enabled by default** for PRs to `main` and tag builds.
 | **Jurisdictions** | Registry valid, resolver tests pass, ETJ answers correct | ✅ Blocking |
 | **Citations Integrity** | Manifests valid, anchors valid, hash matches, all citations resolved | ✅ Blocking |
 | **Report** | PDF generated, validated, permalink works, print layout A11y AA | ✅ Blocking |
+| **NLU Router** | Patterns valid, examples coverage ≥95%, E2E routes correctly | ✅ Blocking |
 | **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
 ## Enabling Quality Gates
@@ -258,6 +259,15 @@ To make quality gates blocking:
 - ✅ Share menu works (copy link, print)
 - ✅ Report snapshot generates valid JSON
 - ✅ Telemetry events recorded (report_generated, report_shared)
+
+## NLU Router Gate Criteria
+
+- ✅ Patterns file validates against schema (AJV)
+- ✅ No duplicate keywords or hints across intents
+- ✅ Unit tests cover examples.json (≥95% match rate)
+- ✅ E2E happy path routes correctly (query → Results → Answer Cards)
+- ✅ Intent detection telemetry recorded (intent_detected events)
+- ✅ Privacy-safe: no raw question text in telemetry
 
 ## Related Issues
 

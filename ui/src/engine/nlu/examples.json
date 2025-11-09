@@ -1,0 +1,219 @@
+{
+  "examples": [
+    {
+      "query": "how far from the street for APN 0204050712",
+      "expected": {
+        "intent": "front_setback",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "what is the front setback for parcel 0204050712",
+      "expected": {
+        "intent": "front_setback",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "front yard setback at 30.25, -97.75",
+      "expected": {
+        "intent": "front_setback",
+        "mode": "latlng",
+        "params": {
+          "latitude": 30.25,
+          "longitude": -97.75
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "side setback for APN 0204050712",
+      "expected": {
+        "intent": "side_setback",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "interior side yard at 30.25, -97.75",
+      "expected": {
+        "intent": "side_setback",
+        "mode": "latlng",
+        "params": {
+          "latitude": 30.25,
+          "longitude": -97.75
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "rear setback requirement for parcel 0204050712",
+      "expected": {
+        "intent": "rear_setback",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "back yard setback at coordinates 30.25, -97.75",
+      "expected": {
+        "intent": "rear_setback",
+        "mode": "latlng",
+        "params": {
+          "latitude": 30.25,
+          "longitude": -97.75
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "how tall can I build in SF-3 APN 0204050712",
+      "expected": {
+        "intent": "max_height",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712",
+          "zone": "SF-3"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "maximum building height for SF-3 at 30.25, -97.75",
+      "expected": {
+        "intent": "max_height",
+        "mode": "latlng",
+        "params": {
+          "latitude": 30.25,
+          "longitude": -97.75,
+          "zone": "SF-3"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "height limit for parcel 0204050712",
+      "expected": {
+        "intent": "max_height",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "lot coverage for APN 0204050712",
+      "expected": {
+        "intent": "lot_coverage",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "maximum lot coverage percentage at 30.25, -97.75",
+      "expected": {
+        "intent": "lot_coverage",
+        "mode": "latlng",
+        "params": {
+          "latitude": 30.25,
+          "longitude": -97.75
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "how much of the lot can be built for parcel 0204050712",
+      "expected": {
+        "intent": "lot_coverage",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "minimum lot size for APN 0204050712",
+      "expected": {
+        "intent": "min_lot_size",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "smallest lot size requirement at 30.25, -97.75",
+      "expected": {
+        "intent": "min_lot_size",
+        "mode": "latlng",
+        "params": {
+          "latitude": 30.25,
+          "longitude": -97.75
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "minimum parcel size for SF-3 APN 0204050712",
+      "expected": {
+        "intent": "min_lot_size",
+        "mode": "apn",
+        "params": {
+          "apn": "0204050712",
+          "zone": "SF-3"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "front setback",
+      "expected": {
+        "intent": "front_setback",
+        "mode": "none",
+        "params": {},
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "max height in SF-3",
+      "expected": {
+        "intent": "max_height",
+        "mode": "none",
+        "params": {
+          "zone": "SF-3"
+        },
+        "confidence": ">=0.7"
+      }
+    },
+    {
+      "query": "what is the building height limit",
+      "expected": {
+        "intent": "max_height",
+        "mode": "none",
+        "params": {},
+        "confidence": ">=0.7"
+      }
+    }
+  ]
+}
+

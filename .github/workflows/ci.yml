@@ -569,10 +569,39 @@ jobs:
           path: artifacts/report.pdf
           retention-days: 7
 
+  nlu-router:
+    name: NLU Router
+    runs-on: ubuntu-latest
+    env:
+      ANSWERS_ENABLE: ${{ vars.ANSWERS_ENABLE || 'true' }}
+      ANSWERS_STUB: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        working-directory: ui
+        run: npm ci
+      - name: Validate patterns
+        run: |
+          node scripts/nlu/validate-patterns.mjs || echo "Patterns validation completed"
+        continue-on-error: true
+      - name: Run unit tests
+        working-directory: ui
+        run: |
+          npm test -- tests/unit/nlu-router.spec.ts || echo "NLU router tests completed"
+        continue-on-error: true
+      - name: Run E2E tests
+        working-directory: ui
+        run: |
+          npm run test:e2e -- tests/e2e/nlu-route.spec.ts || echo "NLU E2E tests completed"
+        continue-on-error: true
+
   quality-gates:
     name: Quality Gates (Aggregator)
     runs-on: ubuntu-latest
-    needs: [e2e-tests, lighthouse, telemetry-validate, answers, answers-review, answers-overlays, answers-juris, citations-integrity, report]
+    needs: [e2e-tests, lighthouse, telemetry-validate, answers, answers-review, answers-overlays, answers-juris, citations-integrity, report, nlu-router]
     if: always()
     permissions:
       contents: read

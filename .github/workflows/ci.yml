@@ -120,20 +120,30 @@ jobs:
   e2e-tests:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest
-    if: env.E2E_ENABLE == 'true'
     env:
       E2E_ENABLE: ${{ vars.E2E_ENABLE || 'false' }}
     steps:
+      - name: Check E2E flag
+        run: |
+          if [ "${{ env.E2E_ENABLE }}" != "true" ]; then
+            echo "SKIPPED (flag=false): E2E_ENABLE is not set to 'true'"
+            echo "To enable: Settings → Secrets and variables → Actions → Variables → Add E2E_ENABLE=true"
+            exit 0
+          fi
       - uses: actions/checkout@v4
+        if: env.E2E_ENABLE == 'true'
       - uses: actions/setup-node@v4
+        if: env.E2E_ENABLE == 'true'
         with:
           node-version: '20'
       - name: Install Playwright
+        if: env.E2E_ENABLE == 'true'
         working-directory: ui
         run: |
           npm ci
           npx playwright install --with-deps
       - name: Run E2E tests
+        if: env.E2E_ENABLE == 'true'
         working-directory: ui
         run: |
           npm run test:e2e || echo "E2E tests not yet implemented"
@@ -142,23 +152,34 @@ jobs:
   lighthouse:
     name: Lighthouse CI
     runs-on: ubuntu-latest
-    if: env.LH_ENABLE == 'true'
     env:
       LH_ENABLE: ${{ vars.LH_ENABLE || 'false' }}
     steps:
+      - name: Check Lighthouse flag
+        run: |
+          if [ "${{ env.LH_ENABLE }}" != "true" ]; then
+            echo "SKIPPED (flag=false): LH_ENABLE is not set to 'true'"
+            echo "To enable: Settings → Secrets and variables → Actions → Variables → Add LH_ENABLE=true"
+            exit 0
+          fi
       - uses: actions/checkout@v4
+        if: env.LH_ENABLE == 'true'
       - uses: actions/setup-node@v4
+        if: env.LH_ENABLE == 'true'
         with:
           node-version: '20'
       - name: Install Lighthouse CI
+        if: env.LH_ENABLE == 'true'
         working-directory: ui
         run: |
           npm ci
           npm install -g @lhci/cli
       - name: Build UI
+        if: env.LH_ENABLE == 'true'
         working-directory: ui
         run: npm run build
       - name: Run Lighthouse CI
+        if: env.LH_ENABLE == 'true'
         working-directory: ui
         run: |
           lhci autorun || echo "Lighthouse CI not yet configured"

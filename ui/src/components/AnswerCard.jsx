@@ -26,6 +26,10 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
   const label = intentLabels[answer.intent] || answer.intent
   const cardId = `answer-card-${answer.intent}`
   const isOverridden = answer.provenance === 'override'
+  const hasOverlay = answer.provenance === 'overlay'
+  const hasException = answer.provenance === 'exception'
+  const hasOverlay = answer.provenance === 'overlay'
+  const hasException = answer.provenance === 'exception'
 
   return (
     <>
@@ -33,11 +37,31 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
         <div className="space-y-3" data-testid={cardId}>
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-lg font-semibold">{label}</h3>
+                {/* Badge priority: Overridden > Overlay > Exception */}
                 {isOverridden && (
-                  <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                  <span 
+                    className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded"
+                    title="This answer has been overridden by a verified correction"
+                  >
                     Overridden
+                  </span>
+                )}
+                {!isOverridden && hasOverlay && (
+                  <span 
+                    className="inline-block px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded"
+                    title="This answer has been adjusted by an overlay district"
+                  >
+                    Overlay
+                  </span>
+                )}
+                {!isOverridden && !hasOverlay && hasException && (
+                  <span 
+                    className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded"
+                    title="This answer has been adjusted by a lot condition exception"
+                  >
+                    Exception
                   </span>
                 )}
                 {answer.status === 'needs_review' && (

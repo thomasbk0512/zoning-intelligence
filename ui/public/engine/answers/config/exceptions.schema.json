@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "predicate", "adjustments", "citations"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique exception identifier, e.g., 'corner_lot'"
+      },
+      "predicate": {
+        "enum": ["corner_lot", "flag_lot", "min_frontage", "steep_slope"],
+        "description": "Exception type predicate"
+      },
+      "adjustments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["intent", "op", "value", "unit"],
+          "properties": {
+            "intent": {
+              "enum": ["front_setback", "side_setback", "rear_setback", "max_height", "lot_coverage", "min_lot_size"]
+            },
+            "op": {
+              "enum": ["max", "min", "add", "replace"]
+            },
+            "value": { "type": "number" },
+            "unit": { "type": "string", "maxLength": 12 }
+          },
+          "additionalProperties": false
+        },
+        "minItems": 1
+      },
+      "citations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["code_id", "section", "anchor"],
+          "properties": {
+            "code_id": { "type": "string" },
+            "section": { "type": "string" },
+            "anchor": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "minItems": 1
+      }
+    },
+    "additionalProperties": false
+  }
+}
+

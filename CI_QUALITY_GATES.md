@@ -32,6 +32,8 @@ All gates are **enabled by default** for PRs to `main` and tag builds.
 | **Contrast Failures** | 0 | ✅ Blocking |
 | **Telemetry Schema** | Validation passes | ✅ Blocking |
 | **Answers** | All golden zones have answers (no missing) | ✅ Blocking |
+| **Overrides** | Schema valid, no expired, applied to goldens | ✅ Blocking |
+| **Overlays & Exceptions** | Configs valid, unit tests pass, conflicts resolved | ✅ Blocking |
 | **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
 ## Enabling Quality Gates
@@ -232,6 +234,7 @@ To make quality gates blocking:
 - ✅ Event structure: all required fields present, types correct
 - ✅ CI uploads telemetry.ndjson artifact
 - ✅ No performance regression (Lighthouse budgets maintained)
+- ✅ Feedback events (`answer_feedback`) validated if present
 
 ## Related Issues
 

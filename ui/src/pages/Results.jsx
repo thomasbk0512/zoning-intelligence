@@ -7,6 +7,7 @@ import { SkeletonCard } from '../components/Skeleton'
 import SourcesFlyout from '../components/SourcesFlyout'
 import Map from '../components/Map'
 import AnswerCard from '../components/AnswerCard'
+import ConflictNotice from '../components/ConflictNotice'
 import { getAnswers } from '../lib/answers'
 import type { ZoningResult } from '../types'
 import type { AnswersResponse } from '../lib/answers'
@@ -27,12 +28,21 @@ export default function Results() {
       // Announce results with key information
       setAnnouncement(`Zoning results loaded for APN ${result.apn}. Zone: ${result.zone}. Height limit: ${result.height_ft} feet. FAR: ${result.far}.`)
       
-      // Load answers
+      // Load answers with parcel context (extract from result if available)
       setAnswersLoading(true)
+      const parcelContext = {
+        overlays: result.overlays || [],
+        lot: {
+          // Extract lot conditions from result if available
+          corner: result.notes?.toLowerCase().includes('corner') || false,
+          flag: result.notes?.toLowerCase().includes('flag') || false,
+        },
+      }
       getAnswers({
         apn: result.apn,
         city: result.jurisdiction.toLowerCase().includes('austin') ? 'austin' : 'austin',
         zone: result.zone,
+        parcelContext,
       })
         .then(response => {
           setAnswers(response)
@@ -137,9 +147,14 @@ export default function Results() {
             <p className="text-sm text-gray-600">
               Authoritative answers to common zoning questions with code citations.
             </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-4">
               {answers.answers.map((answer, index) => (
-                <AnswerCard key={index} answer={answer} />
+                <div key={index} className="space-y-2">
+                  {answer.status === 'needs_review' && (
+                    <ConflictNotice answer={answer} />
+                  )}
+                  <AnswerCard answer={answer} />
+                </div>
               ))}
             </div>
             <p className="text-xs text-gray-500">

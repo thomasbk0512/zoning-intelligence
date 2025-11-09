@@ -1,0 +1,84 @@
+[
+  {
+    "id": "corner_lot",
+    "predicate": "corner_lot",
+    "adjustments": [
+      {
+        "intent": "front_setback",
+        "op": "replace",
+        "value": 20,
+        "unit": "ft"
+      },
+      {
+        "intent": "side_setback",
+        "op": "replace",
+        "value": 10,
+        "unit": "ft"
+      }
+    ],
+    "citations": [
+      {
+        "code_id": "austin_ldc_2024",
+        "section": "25-2-492",
+        "anchor": "(B)(4)"
+      }
+    ]
+  },
+  {
+    "id": "flag_lot",
+    "predicate": "flag_lot",
+    "adjustments": [
+      {
+        "intent": "front_setback",
+        "op": "add",
+        "value": 5,
+        "unit": "ft"
+      }
+    ],
+    "citations": [
+      {
+        "code_id": "austin_ldc_2024",
+        "section": "25-2-492",
+        "anchor": "(B)(5)"
+      }
+    ]
+  },
+  {
+    "id": "min_frontage",
+    "predicate": "min_frontage",
+    "adjustments": [
+      {
+        "intent": "min_lot_size",
+        "op": "replace",
+        "value": 7000,
+        "unit": "sqft"
+      }
+    ],
+    "citations": [
+      {
+        "code_id": "austin_ldc_2024",
+        "section": "25-2-492",
+        "anchor": "(A)(2)"
+      }
+    ]
+  },
+  {
+    "id": "steep_slope",
+    "predicate": "steep_slope",
+    "adjustments": [
+      {
+        "intent": "lot_coverage",
+        "op": "max",
+        "value": 25,
+        "unit": "percent"
+      }
+    ],
+    "citations": [
+      {
+        "code_id": "austin_ldc_2024",
+        "section": "25-2-492",
+        "anchor": "(D)(2)"
+      }
+    ]
+  }
+]

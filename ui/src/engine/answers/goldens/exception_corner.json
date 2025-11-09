@@ -1,0 +1,110 @@
+{
+  "zone": "SF-3",
+  "lotContext": {
+    "corner": true
+  },
+  "answers": [
+    {
+      "intent": "front_setback",
+      "status": "answered",
+      "value": 20,
+      "unit": "ft",
+      "rationale": "Corner lot front setback exception",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-492",
+          "anchor": "(B)(4)",
+          "snippet": "Corner lot: front setback 20 feet"
+        }
+      ],
+      "answer_id": "SF-3:front_setback",
+      "provenance": "exception"
+    },
+    {
+      "intent": "side_setback",
+      "status": "answered",
+      "value": 10,
+      "unit": "ft",
+      "rationale": "Corner lot side setback exception",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-492",
+          "anchor": "(B)(4)",
+          "snippet": "Corner lot: side setback 10 feet"
+        }
+      ],
+      "answer_id": "SF-3:side_setback",
+      "provenance": "exception"
+    },
+    {
+      "intent": "rear_setback",
+      "status": "answered",
+      "value": 10,
+      "unit": "ft",
+      "rationale": "Minimum rear yard setback for SF-3",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-492",
+          "anchor": "(B)(3)",
+          "snippet": "Rear yard: 10 feet minimum"
+        }
+      ],
+      "answer_id": "SF-3:rear_setback",
+      "provenance": "rule"
+    },
+    {
+      "intent": "max_height",
+      "status": "answered",
+      "value": 35,
+      "unit": "ft",
+      "rationale": "Maximum building height for SF-3",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-492",
+          "anchor": "(C)",
+          "snippet": "Maximum height: 35 feet"
+        }
+      ],
+      "answer_id": "SF-3:max_height",
+      "provenance": "rule"
+    },
+    {
+      "intent": "lot_coverage",
+      "status": "answered",
+      "value": 40,
+      "unit": "percent",
+      "rationale": "Maximum lot coverage for SF-3",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-492",
+          "anchor": "(D)",
+          "snippet": "Maximum lot coverage: 40 percent"
+        }
+      ],
+      "answer_id": "SF-3:lot_coverage",
+      "provenance": "rule"
+    },
+    {
+      "intent": "min_lot_size",
+      "status": "answered",
+      "value": 5750,
+      "unit": "sqft",
+      "rationale": "Minimum lot size for SF-3",
+      "citations": [
+        {
+          "code_id": "austin_ldc_2024",
+          "section": "25-2-492",
+          "anchor": "(A)",
+          "snippet": "Minimum lot size: 5,750 square feet"
+        }
+      ],
+      "answer_id": "SF-3:min_lot_size",
+      "provenance": "rule"
+    }
+  ]
+}

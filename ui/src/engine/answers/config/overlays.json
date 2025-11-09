@@ -1,0 +1,47 @@
+[
+  {
+    "id": "HD",
+    "name": "Historic District",
+    "applies_to": ["front_setback", "max_height"],
+    "op": "min",
+    "value": 30,
+    "unit": "ft",
+    "citations": [
+      {
+        "code_id": "austin_ldc_2024",
+        "section": "25-2-900",
+        "anchor": "(B)(1)"
+      }
+    ]
+  },
+  {
+    "id": "NP",
+    "name": "Neighborhood Plan",
+    "applies_to": ["lot_coverage"],
+    "op": "max",
+    "value": 35,
+    "unit": "percent",
+    "citations": [
+      {
+        "code_id": "austin_ldc_2024",
+        "section": "25-2-800",
+        "anchor": "(C)"
+      }
+    ]
+  },
+  {
+    "id": "WQZ",
+    "name": "Water Quality Zone",
+    "applies_to": ["lot_coverage", "min_lot_size"],
+    "op": "max",
+    "value": 30,
+    "unit": "percent",
+    "citations": [
+      {
+        "code_id": "austin_ldc_2024",
+        "section": "25-8-261",
+        "anchor": "(A)"
+      }
+    ]
+  }
+]

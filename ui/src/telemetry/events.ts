@@ -17,6 +17,7 @@ export type TelemetryEvent =
   | AnswerRenderEvent
   | CitationOpenedEvent
   | AnswerFeedbackEvent
+  | AnswerResolvedEvent
 
 export interface BaseEvent {
   event_type: string
@@ -94,6 +95,13 @@ export interface AnswerFeedbackEvent extends BaseEvent {
       anchor?: string
     }
   }
+}
+
+export interface AnswerResolvedEvent extends BaseEvent {
+  event_type: 'answer_resolved'
+  intents: string[]
+  via: 'rule' | 'overlay' | 'exception' | 'override' | 'needs_review'
+  conflict?: boolean
 }
 
 /**

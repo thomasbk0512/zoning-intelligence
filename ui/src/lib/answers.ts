@@ -6,6 +6,8 @@
 
 import { ZoningAnswer } from '../engine/answers/rules'
 import { mergeWithOverrides, loadOverrides } from '../engine/answers/merge'
+import type { LotContext } from '../engine/answers/conditions'
+import type { ParcelContext } from '../engine/answers/overlays'
 
 export interface AnswersRequest {
   apn?: string
@@ -14,6 +16,8 @@ export interface AnswersRequest {
   city: string
   zone: string
   applyOverrides?: boolean // Whether to apply overrides (default: true)
+  overlays?: string[] // Overlay IDs, e.g., ["HD", "NP"]
+  lotContext?: LotContext // Lot-specific context (corner, flag, frontage, slope)
 }
 
 export interface AnswersResponse {
@@ -48,11 +52,21 @@ export async function getAnswers(request: AnswersRequest): Promise<AnswersRespon
   let answers = getAnswersForZone(request.zone)
   const msTotal = typeof performance !== 'undefined' ? Math.round(performance.now() - startTime) : 0
 
-  // Apply overrides if enabled (default: true)
+  // Apply overlays, exceptions, and overrides if enabled (default: true)
   const shouldApplyOverrides = request.applyOverrides !== false
   if (shouldApplyOverrides) {
     const overrides = await loadOverrides()
-    answers = answers.map(answer => mergeWithOverrides(answer, overrides, request.apn))
+    answers = await Promise.all(
+      answers.map(answer =>
+        mergeWithOverrides(
+          answer,
+          overrides,
+          request.apn,
+          request.overlays ? { overlays: request.overlays } : undefined,
+          request.lotContext
+        )
+      )
+    )
   }
 
   // Track telemetry
@@ -84,9 +98,13 @@ async function getStubbedAnswers(zone: string): Promise<AnswersResponse> {
       const data = await response.json()
       let answers = data.answers || []
       
-      // Apply overrides to stubbed answers (for CI/testing)
+      // Apply overrides, overlays, and exceptions to stubbed answers (for CI/testing)
       const overrides = await loadOverrides()
-      answers = answers.map((answer: ZoningAnswer) => mergeWithOverrides(answer, overrides))
+      answers = await Promise.all(
+        answers.map((answer: ZoningAnswer) =>
+          mergeWithOverrides(answer, overrides, undefined, undefined, undefined)
+        )
+      )
       
       return {
         answers,

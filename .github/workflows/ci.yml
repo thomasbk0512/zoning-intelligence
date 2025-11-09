@@ -287,6 +287,9 @@ jobs:
       - name: Install dependencies
         working-directory: ui
         run: npm ci
+      - name: Install Playwright
+        working-directory: ui
+        run: npm install -D @playwright/test playwright
       - name: Build production app
         working-directory: ui
         run: npm run build

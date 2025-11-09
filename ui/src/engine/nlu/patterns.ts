@@ -1,7 +1,13 @@
-{
-  "intents": {
-    "front_setback": {
-      "keywords": [
+/**
+ * Natural Language Patterns
+ * 
+ * Patterns for matching user queries to zoning intents.
+ */
+
+export const patternsData = {
+  intents: {
+    front_setback: {
+      keywords: [
         "front setback",
         "setback from street",
         "front yard",
@@ -9,44 +15,28 @@
         "how far from street",
         "front yard setback"
       ],
-      "hints": [
-        "front",
-        "street",
-        "setback",
-        "yard",
-        "distance"
-      ]
+      hints: ["front", "street", "setback", "yard", "distance"]
     },
-    "side_setback": {
-      "keywords": [
+    side_setback: {
+      keywords: [
         "side setback",
         "interior side yard",
         "side yard setback",
         "distance from side property line"
       ],
-      "hints": [
-        "side",
-        "interior",
-        "yard",
-        "setback"
-      ]
+      hints: ["side", "interior", "yard", "setback"]
     },
-    "rear_setback": {
-      "keywords": [
+    rear_setback: {
+      keywords: [
         "rear setback",
         "back yard",
         "rear yard setback",
         "distance from rear property line"
       ],
-      "hints": [
-        "rear",
-        "back",
-        "yard",
-        "setback"
-      ]
+      hints: ["rear", "back", "yard", "setback"]
     },
-    "max_height": {
-      "keywords": [
+    max_height: {
+      keywords: [
         "building height",
         "max height",
         "maximum height",
@@ -54,51 +44,36 @@
         "height limit",
         "building height limit"
       ],
-      "hints": [
-        "height",
-        "tall",
-        "maximum",
-        "max"
-      ]
+      hints: ["height", "tall", "maximum", "max"]
     },
-    "lot_coverage": {
-      "keywords": [
+    lot_coverage: {
+      keywords: [
         "lot coverage",
         "maximum lot coverage",
         "coverage percentage",
         "how much of lot can be built",
         "impervious cover"
       ],
-      "hints": [
-        "coverage",
-        "percentage",
-        "lot",
-        "impervious"
-      ]
+      hints: ["coverage", "percentage", "lot", "impervious"]
     },
-    "min_lot_size": {
-      "keywords": [
+    min_lot_size: {
+      keywords: [
         "minimum lot size",
         "lot size requirement",
         "smallest lot size",
         "minimum parcel size"
       ],
-      "hints": [
-        "lot",
-        "size",
-        "minimum",
-        "parcel"
-      ]
+      hints: ["lot", "size", "minimum", "parcel"]
     }
   },
-  "locators": {
-    "apn": [
+  locators: {
+    apn: [
       "apn",
       "parcel number",
       "parcel id",
       "property id"
     ],
-    "latlng": [
+    latlng: [
       "lat",
       "latitude",
       "lng",
@@ -108,4 +83,5 @@
       "location"
     ]
   }
-}
+} as const
+

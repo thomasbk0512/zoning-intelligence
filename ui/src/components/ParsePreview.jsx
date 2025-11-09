@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Button from './Button'
 import IntentChip from './IntentChip'
-import type { ParseResult } from '../engine/nlu/router'
+import { type ParseResult } from '../engine/nlu/router'
 
 interface ParsePreviewProps {
   parse: ParseResult

@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import Button from './Button'
 import Card from './Card'
 import Input from './Input'
-import type { ZoningAnswer } from '../engine/answers/rules'
-import type { CodeCitation } from '../engine/answers/rules'
+import { type ZoningAnswer } from '../engine/answers/rules'
+import { type CodeCitation } from '../engine/answers/rules'
 
 interface FeedbackSheetProps {
   answer: ZoningAnswer

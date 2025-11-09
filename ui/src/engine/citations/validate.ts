@@ -5,6 +5,7 @@
  */
 
 import type { CodeManifest, AnchorEntry, CitationSnapshot } from './snapshot'
+import { loadSnapshot } from './snapshot'
 import type { CodeCitation } from '../answers/rules'
 
 export interface ValidationResult {

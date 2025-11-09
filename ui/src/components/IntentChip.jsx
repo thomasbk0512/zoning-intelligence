@@ -1,4 +1,4 @@
-import type { ParseResult } from '../engine/nlu/router'
+import { type ParseResult } from '../engine/nlu/router'
 
 interface IntentChipProps {
   intent: string

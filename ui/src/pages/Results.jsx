@@ -16,19 +16,17 @@ import ShareMenu from '../components/ShareMenu'
 import { getAnswers } from '../lib/answers'
 import { generateReportSnapshot } from '../lib/report'
 import { resolveFromAPN, resolveFromLatLng, getJurisdictionById } from '../engine/juris/resolve'
-import type { ZoningResult } from '../types'
-import type { AnswersResponse } from '../lib/answers'
-import type { ShareParams } from '../lib/share'
 
 export default function Results() {
   const location = useLocation()
   const navigate = useNavigate()
-  const result = location.state?.result as ZoningResult | undefined
+  const result = location.state?.result
   const [loading, setLoading] = useState(!result)
   const [announcement, setAnnouncement] = useState('')
   const [sourcesFlyoutOpen, setSourcesFlyoutOpen] = useState(false)
-  const [answers, setAnswers] = useState<AnswersResponse | null>(null)
+  const [answers, setAnswers] = useState(null)
   const [answersLoading, setAnswersLoading] = useState(false)
+  const [jurisdiction, setJurisdiction] = useState(null)
 
   useEffect(() => {
     if (result) {
@@ -36,6 +34,8 @@ export default function Results() {
       // Announce results with key information
       setAnnouncement(`Zoning results loaded for APN ${result.apn}. Zone: ${result.zone}. Height limit: ${result.height_ft} feet. FAR: ${result.far}.`)
       
+      // Async function to resolve jurisdiction and load answers
+      const loadData = async () => {
       // Resolve jurisdiction
       let jurisdictionId = 'austin' // Default
       let jurisdictionResult = null
@@ -52,8 +52,8 @@ export default function Results() {
         setJurisdiction(juris)
         
         // Track telemetry
-        if (typeof window !== 'undefined' && (window as any).__telem_track) {
-          ;(window as any).__telem_track('jurisdiction_resolved', {
+          if (typeof window !== 'undefined' && window.__telem_track) {
+            window.__telem_track('jurisdiction_resolved', {
             jurisdiction_id: jurisdictionId,
             resolver: jurisdictionResult.resolver,
             district: jurisdictionResult.district,
@@ -97,6 +97,11 @@ export default function Results() {
         })
         .finally(() => {
           setAnswersLoading(false)
+          })
+      }
+      
+      loadData().catch(error => {
+        console.error('Failed to load jurisdiction data:', error)
         })
     } else if (loading) {
       setAnnouncement('Loading zoning results...')
@@ -164,10 +169,10 @@ export default function Results() {
               }}
               onShare={(method) => {
                 // Track report generation on share
-                if (answers && typeof window !== 'undefined' && (window as any).__telem_track) {
+                if (answers && typeof window !== 'undefined' && window.__telem_track) {
                   const hasConflicts = answers.answers.some(a => a.status === 'needs_review')
                   const jurisdictionId = jurisdiction?.id || 'austin'
-                  ;(window as any).__telem_track('report_generated', {
+                  window.__telem_track('report_generated', {
                     intents_count: answers.answers.length,
                     has_conflicts: hasConflicts,
                     jurisdiction: jurisdictionId,
@@ -216,12 +221,12 @@ export default function Results() {
         {answers && answers.answers.length > 0 && (
           <div className="space-y-4">
             {/* Version Notice for stale citations */}
-            {answers.answers.some(a => a.citations.some((c: any) => c.stale)) && (
+            {answers.answers.some(a => a.citations.some(c => c.stale)) && (
               <VersionNotice
-                citations={answers.answers.flatMap(a => a.citations as any[])}
+                citations={answers.answers.flatMap(a => a.citations)}
                 onViewDiagnostics={() => {
                   // Open diagnostics panel if available
-                  const diagnosticsButton = document.querySelector('[data-testid="diagnostics-button"]') as HTMLElement
+                  const diagnosticsButton = document.querySelector('[data-testid="diagnostics-button"]')
                   if (diagnosticsButton) {
                     diagnosticsButton.click()
                   }

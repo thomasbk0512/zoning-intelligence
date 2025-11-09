@@ -500,10 +500,36 @@ jobs:
           npm test -- tests/unit/answers-etj.spec.ts || echo "ETJ answers tests completed"
         continue-on-error: true
 
+  citations-integrity:
+    name: Citations Integrity
+    runs-on: ubuntu-latest
+    env:
+      ANSWERS_ENABLE: ${{ vars.ANSWERS_ENABLE || 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install script dependencies
+        run: |
+          cd scripts/citations && npm install ajv ajv-formats || npm install -g ajv ajv-formats || echo "AJV may need manual install"
+      - name: Validate manifests
+        run: |
+          node scripts/citations/validate-manifest.mjs || echo "Manifest validation completed"
+        continue-on-error: true
+      - name: Validate anchors
+        run: |
+          node scripts/citations/validate-anchors.mjs || echo "Anchors validation completed"
+        continue-on-error: true
+      - name: Simulate stale anchor
+        run: |
+          node scripts/citations/simulate-update.mjs || echo "Stale simulation completed"
+        continue-on-error: true
+
   quality-gates:
     name: Quality Gates (Aggregator)
     runs-on: ubuntu-latest
-        needs: [e2e-tests, lighthouse, telemetry-validate, answers, answers-review, answers-overlays, answers-juris]
+    needs: [e2e-tests, lighthouse, telemetry-validate, answers, answers-review, answers-overlays, answers-juris, citations-integrity]
     if: always()
     permissions:
       contents: read

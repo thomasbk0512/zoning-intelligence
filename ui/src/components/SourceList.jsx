@@ -1,8 +1,8 @@
-import { getCitationUrl, formatCitation, getFullCitationText } from '../engine/answers/citations'
+import { getCitationUrl, formatCitation, getFullCitationText, type CitationWithVersion } from '../engine/answers/citations'
 import type { CodeCitation } from '../engine/answers/rules'
 
 interface SourceListProps {
-  citations: CodeCitation[]
+  citations: (CodeCitation | CitationWithVersion)[]
 }
 
 export default function SourceList({ citations }: SourceListProps) {
@@ -26,10 +26,12 @@ export default function SourceList({ citations }: SourceListProps) {
   )
 }
 
-function CitationItem({ citation }: { citation: CodeCitation }) {
+function CitationItem({ citation }: { citation: CodeCitation | CitationWithVersion }) {
   const url = getCitationUrl(citation)
   const formatted = formatCitation(citation)
   const fullText = getFullCitationText(citation)
+  const version = 'version' in citation ? citation.version : undefined
+  const publishedAt = 'published_at' in citation ? citation.published_at : undefined
 
   if (url) {
     return (
@@ -41,6 +43,9 @@ function CitationItem({ citation }: { citation: CodeCitation }) {
         aria-label={`View code section ${formatted} (opens in new tab)`}
       >
         <span>{fullText}</span>
+        {version && (
+          <span className="text-xs text-gray-500 ml-1">v{version}</span>
+        )}
         <svg
           className="w-3 h-3"
           fill="none"
@@ -59,6 +64,13 @@ function CitationItem({ citation }: { citation: CodeCitation }) {
     )
   }
 
-  return <span className="text-gray-700">{fullText}</span>
+  return (
+    <span className="text-gray-700">
+      {fullText}
+      {version && (
+        <span className="text-xs text-gray-500 ml-1">v{version}</span>
+      )}
+    </span>
+  )
 }
 

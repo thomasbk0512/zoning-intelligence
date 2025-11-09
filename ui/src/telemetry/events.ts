@@ -77,6 +77,8 @@ export interface AnswerRenderEvent extends BaseEvent {
 export interface CitationOpenedEvent extends BaseEvent {
   event_type: 'citation_opened'
   code_id: string
+  version?: string
+  jurisdiction_id?: string
 }
 
 export interface AnswerFeedbackEvent extends BaseEvent {

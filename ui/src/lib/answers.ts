@@ -6,6 +6,7 @@
 
 import { ZoningAnswer } from '../engine/answers/rules'
 import { mergeWithOverrides, loadOverrides } from '../engine/answers/merge'
+import { enrichCitations } from '../engine/answers/citations'
 import type { LotContext } from '../engine/answers/conditions'
 import type { ParcelContext } from '../engine/answers/overlays'
 

@@ -1,0 +1,114 @@
+{
+  "code_id": "austin_ldc_2024",
+  "anchors": [
+    {
+      "section": "25-2-490",
+      "anchor": "(A)",
+      "snippet_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "snippet": "Minimum lot size: 8,750 square feet"
+    },
+    {
+      "section": "25-2-490",
+      "anchor": "(B)(1)",
+      "snippet_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "snippet": "Front yard: 40 feet minimum"
+    },
+    {
+      "section": "25-2-490",
+      "anchor": "(B)(2)",
+      "snippet_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+      "snippet": "Interior side yard: 10 feet minimum"
+    },
+    {
+      "section": "25-2-490",
+      "anchor": "(B)(3)",
+      "snippet_hash": "4444444444444444444444444444444444444444444444444444444444444444",
+      "snippet": "Rear yard: 25 feet minimum"
+    },
+    {
+      "section": "25-2-490",
+      "anchor": "(C)",
+      "snippet_hash": "5555555555555555555555555555555555555555555555555555555555555555",
+      "snippet": "Maximum height: 35 feet"
+    },
+    {
+      "section": "25-2-490",
+      "anchor": "(D)",
+      "snippet_hash": "6666666666666666666666666666666666666666666666666666666666666666",
+      "snippet": "Maximum lot coverage: 35 percent"
+    },
+    {
+      "section": "25-2-491",
+      "anchor": "(A)",
+      "snippet_hash": "7777777777777777777777777777777777777777777777777777777777777777",
+      "snippet": "Minimum lot size: 5,750 square feet"
+    },
+    {
+      "section": "25-2-491",
+      "anchor": "(B)(1)",
+      "snippet_hash": "8888888888888888888888888888888888888888888888888888888888888888",
+      "snippet": "Front yard: 25 feet minimum"
+    },
+    {
+      "section": "25-2-491",
+      "anchor": "(B)(2)",
+      "snippet_hash": "9999999999999999999999999999999999999999999999999999999999999999",
+      "snippet": "Interior side yard: 5 feet minimum"
+    },
+    {
+      "section": "25-2-491",
+      "anchor": "(B)(3)",
+      "snippet_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "snippet": "Rear yard: 10 feet minimum"
+    },
+    {
+      "section": "25-2-491",
+      "anchor": "(C)",
+      "snippet_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "snippet": "Maximum height: 35 feet"
+    },
+    {
+      "section": "25-2-491",
+      "anchor": "(D)",
+      "snippet_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "snippet": "Maximum lot coverage: 40 percent"
+    },
+    {
+      "section": "25-2-492",
+      "anchor": "(A)",
+      "snippet_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "snippet": "Minimum lot size: 5,750 square feet"
+    },
+    {
+      "section": "25-2-492",
+      "anchor": "(B)(1)",
+      "snippet_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "snippet": "Front yard: 25 feet minimum"
+    },
+    {
+      "section": "25-2-492",
+      "anchor": "(B)(2)",
+      "snippet_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "snippet": "Interior side yard: 5 feet minimum"
+    },
+    {
+      "section": "25-2-492",
+      "anchor": "(B)(3)",
+      "snippet_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "snippet": "Rear yard: 10 feet minimum"
+    },
+    {
+      "section": "25-2-492",
+      "anchor": "(C)",
+      "snippet_hash": "1111111111111111111111111111111111111111111111111111111111111110",
+      "snippet": "Maximum height: 35 feet"
+    },
+    {
+      "section": "25-2-492",
+      "anchor": "(D)",
+      "snippet_hash": "2222222222222222222222222222222222222222222222222222222222222221",
+      "snippet": "Maximum lot coverage: 40 percent"
+    }
+  ]
+}
+

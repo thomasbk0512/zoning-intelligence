@@ -24,6 +24,9 @@ export type TelemetryEvent =
   | IntentDetectedEvent
   | TraceOpenedEvent
   | TraceCopiedEvent
+  | RecentsViewedEvent
+  | ApnSanitizedEvent
+  | CtaPrimaryEvent
 
 export interface BaseEvent {
   event_type: string
@@ -48,8 +51,9 @@ export interface SearchSubmitEvent extends BaseEvent {
 
 export interface ValidationErrorEvent extends BaseEvent {
   event_type: 'validation_error'
-  field: 'apn' | 'lat' | 'lng'
+  field: 'apn' | 'lat' | 'lng' | 'nlq'
   reason: 'format' | 'range' | 'required'
+  surface?: 'search' | 'home'
 }
 
 export interface ResultsRenderEvent extends BaseEvent {
@@ -135,6 +139,7 @@ export interface IntentDetectedEvent extends BaseEvent {
   event_type: 'intent_detected'
   intent: string
   confidence: number
+  confidence_bucket?: 'low' | 'medium' | 'high'
   mode: 'apn' | 'latlng' | 'none'
 }
 
@@ -148,6 +153,25 @@ export interface TraceOpenedEvent extends BaseEvent {
 export interface TraceCopiedEvent extends BaseEvent {
   event_type: 'trace_copied'
   format: 'json' | 'md'
+}
+
+export interface RecentsViewedEvent extends BaseEvent {
+  event_type: 'recents_viewed'
+  count: number
+}
+
+export interface CtaPrimaryEvent extends BaseEvent {
+  event_type: 'cta_primary'
+  cta_type: 'continue' | 'search'
+  surface: 'home' | 'search'
+}
+
+export interface ApnSanitizedEvent extends BaseEvent {
+  event_type: 'apn_sanitized'
+  count: number
+  original_length: number
+  sanitized_length: number
+  source: 'paste' | 'input'
 }
 
 /**

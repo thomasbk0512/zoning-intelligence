@@ -3,15 +3,10 @@ import Button from './Button'
 import Card from './Card'
 import { getBuildInfo } from '../lib/buildInfo'
 
-interface DiagnosticsPanelProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-export default function DiagnosticsPanel({ isOpen, onClose }: DiagnosticsPanelProps) {
-  const panelRef = useRef<HTMLDivElement>(null)
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
-  const [buildInfo, setBuildInfo] = useState<any>(null)
+export default function DiagnosticsPanel({ isOpen, onClose }) {
+  const panelRef = useRef(null)
+  const closeButtonRef = useRef(null)
+  const [buildInfo, setBuildInfo] = useState(null)
 
   // Load build info
   useEffect(() => {
@@ -24,7 +19,7 @@ export default function DiagnosticsPanel({ isOpen, onClose }: DiagnosticsPanelPr
   useEffect(() => {
     if (!isOpen) return
 
-    const handleTab = (e: KeyboardEvent) => {
+    const handleTab = (e) => {
       if (e.key !== 'Tab') return
 
       const focusableElements = panelRef.current?.querySelectorAll(
@@ -32,8 +27,8 @@ export default function DiagnosticsPanel({ isOpen, onClose }: DiagnosticsPanelPr
       )
       if (!focusableElements || focusableElements.length === 0) return
 
-      const firstElement = focusableElements[0] as HTMLElement
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -50,7 +45,7 @@ export default function DiagnosticsPanel({ isOpen, onClose }: DiagnosticsPanelPr
 
     closeButtonRef.current?.focus()
 
-    const handleEsc = (e: KeyboardEvent) => {
+    const handleEsc = (e) => {
       if (e.key === 'Escape') {
         onClose()
       }

@@ -1,0 +1,36 @@
+{
+  "pr_number": "TBD",
+  "branch": "ux/fixpack-hs-2",
+  "files_changed": [
+    "Home.jsx",
+    "Search.jsx",
+    "ParsePreview.jsx",
+    "IntentChip.jsx",
+    "ApnInput.jsx",
+    "CityField.jsx",
+    "router.ts",
+    "validation.ts",
+    "recents.ts",
+    "events.ts",
+    "copy/ui.ts",
+    "tests/e2e/nlq-confidence.spec.ts",
+    "tests/e2e/validation-tabs.spec.ts",
+    "tests/e2e/cta-single-primary.spec.ts"
+  ],
+  "ui_changes": {
+    "single_primary_cta": true,
+    "confidence_badge": "bucketed",
+    "city_field_hidden": true,
+    "validation_scoped_to_tab": true,
+    "enter_submits": true
+  },
+  "telemetry": {
+    "nlq_confidence_bucket": true,
+    "validation_surface": true,
+    "cta_primary_type": true,
+    "apn_sanitized": true
+  },
+  "a11y_pass": true,
+  "bundle_growth_gzip_kb": "<=20"
+}
+

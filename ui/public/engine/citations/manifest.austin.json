@@ -1,0 +1,15 @@
+{
+  "jurisdiction_id": "austin",
+  "version": "2025.01",
+  "published_at": "2025-01-15",
+  "sources": [
+    {
+      "code_id": "austin_ldc_2024",
+      "name": "Austin Land Development Code",
+      "url": "https://library.municode.com/tx/austin/codes/land_development_code",
+      "sections": ["25-2-490", "25-2-491", "25-2-492"]
+    }
+  ],
+  "hash": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
+}
+

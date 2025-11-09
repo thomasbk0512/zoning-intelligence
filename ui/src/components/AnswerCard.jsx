@@ -28,8 +28,10 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
   const isOverridden = answer.provenance === 'override'
   const hasOverlay = answer.provenance === 'overlay'
   const hasException = answer.provenance === 'exception'
-  const hasOverlay = answer.provenance === 'overlay'
-  const hasException = answer.provenance === 'exception'
+  
+  // Get version from first citation if available
+  const firstCitation = answer.citations[0] as CitationWithVersion | undefined
+  const version = firstCitation?.version
 
   return (
     <>
@@ -67,6 +69,14 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
                 {answer.status === 'needs_review' && (
                   <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
                     Needs Review
+                  </span>
+                )}
+                {version && (
+                  <span 
+                    className="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded"
+                    title={`Code version ${version}`}
+                  >
+                    Code v{version}
                   </span>
                 )}
               </div>

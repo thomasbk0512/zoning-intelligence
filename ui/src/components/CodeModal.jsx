@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import Button from './Button'
 import type { ZoningAnswer } from '../engine/answers/rules'
+import type { CitationWithVersion } from '../engine/answers/citations'
 import { getFullCitationText } from '../engine/answers/citations'
 
 interface CodeModalProps {
@@ -13,17 +14,25 @@ export default function CodeModal({ answer, isOpen, onClose }: CodeModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
 
+  // Get version info from first citation if available
+  const firstCitation = answer.citations[0] as CitationWithVersion | undefined
+  const version = firstCitation?.version
+  const publishedAt = firstCitation?.published_at
+  const codeId = firstCitation?.code_id
+
   // Track citation opened
   useEffect(() => {
     if (isOpen && answer.citations.length > 0) {
-      const citation = answer.citations[0]
-      if (window.__telem_track) {
-        window.__telem_track('citation_opened', {
+      const citation = answer.citations[0] as CitationWithVersion
+      if (typeof window !== 'undefined' && (window as any).__telem_track) {
+        ;(window as any).__telem_track('citation_opened', {
           code_id: citation.code_id,
+          version: citation.version,
+          jurisdiction_id: codeId?.includes('austin') ? 'austin' : codeId?.includes('travis') ? 'travis_etj' : undefined,
         })
       }
     }
-  }, [isOpen, answer])
+  }, [isOpen, answer, codeId])
 
   // Focus trap
   useEffect(() => {
@@ -97,9 +106,15 @@ export default function CodeModal({ answer, isOpen, onClose }: CodeModalProps) {
               <h2 id="code-modal-title" className="text-xl font-bold">
                 Code Citations
               </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                {answer.intent.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </p>
+              <div className="text-sm text-gray-600 mt-1 space-y-1">
+                <p>{answer.intent.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+                {version && (
+                  <p className="text-xs">
+                    Code version: {version}
+                    {publishedAt && ` (Published: ${publishedAt})`}
+                  </p>
+                )}
+              </div>
             </div>
             <Button
               ref={closeButtonRef}

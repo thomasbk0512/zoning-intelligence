@@ -205,6 +205,26 @@ export default function DiagnosticsPanel({ isOpen, onClose }: DiagnosticsPanelPr
               </dl>
             </Card>
 
+            <Card title="Citation Manifests">
+              <p className="text-sm text-gray-600 mb-4">
+                Code source versions and integrity information.
+              </p>
+              <div className="space-y-3 text-sm">
+                <div className="border-b border-gray-200 pb-2">
+                  <div className="font-semibold">Austin</div>
+                  <div className="text-gray-600 text-xs mt-1">
+                    Version: 2025.01 | Published: 2025-01-15
+                  </div>
+                </div>
+                <div className="border-b border-gray-200 pb-2">
+                  <div className="font-semibold">Travis County ETJ</div>
+                  <div className="text-gray-600 text-xs mt-1">
+                    Version: 2025.01 | Published: 2025-01-15
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             <Card title="Web Vitals">
               <p className="text-sm text-gray-600">
                 Web Vitals metrics are collected via telemetry. Check browser console for recent values.

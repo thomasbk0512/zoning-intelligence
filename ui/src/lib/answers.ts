@@ -6,6 +6,7 @@
 
 import { ZoningAnswer } from '../engine/answers/rules'
 import { mergeWithOverrides, loadOverrides } from '../engine/answers/merge'
+import { enrichCitations } from '../engine/answers/citations'
 import type { LotContext } from '../engine/answers/conditions'
 import type { ParcelContext } from '../engine/answers/overlays'
 
@@ -71,6 +72,13 @@ export async function getAnswers(request: AnswersRequest): Promise<AnswersRespon
     )
   }
 
+  // Enrich citations with version info
+  if (jurisdictionId) {
+    for (let i = 0; i < answers.length; i++) {
+      answers[i].citations = await enrichCitations(answers[i].citations, jurisdictionId)
+    }
+  }
+
   // Track telemetry
   if (typeof window !== 'undefined' && (window as any).__telem_track) {
     ;(window as any).__telem_track('answer_render', {
@@ -107,6 +115,12 @@ async function getStubbedAnswers(zone: string): Promise<AnswersResponse> {
           mergeWithOverrides(answer, overrides, undefined, undefined, undefined)
         )
       )
+      
+      // Enrich citations with version info (use jurisdiction from data if available)
+      const jurisdictionId = (data as any).jurisdiction === 'travis_etj' ? 'travis_etj' : 'austin'
+      for (let i = 0; i < answers.length; i++) {
+        answers[i].citations = await enrichCitations(answers[i].citations, jurisdictionId)
+      }
       
       return {
         answers,

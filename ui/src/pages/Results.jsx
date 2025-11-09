@@ -9,6 +9,7 @@ import Map from '../components/Map'
 import AnswerCard from '../components/AnswerCard'
 import ConflictNotice from '../components/ConflictNotice'
 import JurisdictionBadge from '../components/JurisdictionBadge'
+import VersionNotice from '../components/VersionNotice'
 import { getAnswers } from '../lib/answers'
 import { resolveFromAPN, resolveFromLatLng, getJurisdictionById } from '../engine/juris/resolve'
 import type { ZoningResult } from '../types'
@@ -30,21 +31,56 @@ export default function Results() {
       // Announce results with key information
       setAnnouncement(`Zoning results loaded for APN ${result.apn}. Zone: ${result.zone}. Height limit: ${result.height_ft} feet. FAR: ${result.far}.`)
       
-      // Load answers with parcel context (extract from result if available)
-      setAnswersLoading(true)
-      const parcelContext = {
-        overlays: result.overlays || [],
-        lot: {
-          // Extract lot conditions from result if available
-          corner: result.notes?.toLowerCase().includes('corner') || false,
-          flag: result.notes?.toLowerCase().includes('flag') || false,
-        },
+      // Resolve jurisdiction
+      let jurisdictionId = 'austin' // Default
+      let jurisdictionResult = null
+      
+      if (result.apn) {
+        jurisdictionResult = await resolveFromAPN(result.apn)
+      } else if (result.latitude && result.longitude) {
+        jurisdictionResult = await resolveFromLatLng(result.latitude, result.longitude)
       }
+      
+      if (jurisdictionResult) {
+        jurisdictionId = jurisdictionResult.jurisdiction_id
+        const juris = await getJurisdictionById(jurisdictionId)
+        setJurisdiction(juris)
+        
+        // Track telemetry
+        if (typeof window !== 'undefined' && (window as any).__telem_track) {
+          ;(window as any).__telem_track('jurisdiction_resolved', {
+            jurisdiction_id: jurisdictionId,
+            resolver: jurisdictionResult.resolver,
+            district: jurisdictionResult.district,
+          })
+        }
+      } else {
+        // Fallback: try to get jurisdiction from result
+        const juris = await getJurisdictionById('austin')
+        setJurisdiction(juris)
+      }
+      
+      // Load answers with overlays and lot context (extract from result if available)
+      setAnswersLoading(true)
+      
+      // Extract overlays from result (if available)
+      const overlays = result.overlays || []
+      
+      // Build lot context from result (if available)
+      const lotContext = {
+        corner: result.notes?.toLowerCase().includes('corner') || false,
+        flag: result.notes?.toLowerCase().includes('flag') || false,
+        // Frontage, width, slope would come from parcel geometry analysis
+        // For now, use defaults
+      }
+      
       getAnswers({
         apn: result.apn,
         city: result.jurisdiction.toLowerCase().includes('austin') ? 'austin' : 'austin',
         zone: result.zone,
-        parcelContext,
+        jurisdictionId,
+        overlays,
+        lotContext,
       })
         .then(response => {
           setAnswers(response)
@@ -140,6 +176,19 @@ export default function Results() {
         {/* Zoning Answers (Beta) */}
         {answers && answers.answers.length > 0 && (
           <div className="space-y-4">
+            {/* Version Notice for stale citations */}
+            {answers.answers.some(a => a.citations.some((c: any) => c.stale)) && (
+              <VersionNotice
+                citations={answers.answers.flatMap(a => a.citations as any[])}
+                onViewDiagnostics={() => {
+                  // Open diagnostics panel if available
+                  const diagnosticsButton = document.querySelector('[data-testid="diagnostics-button"]') as HTMLElement
+                  if (diagnosticsButton) {
+                    diagnosticsButton.click()
+                  }
+                }}
+              />
+            )}
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Zoning Answers (Beta)</h2>
               <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded">

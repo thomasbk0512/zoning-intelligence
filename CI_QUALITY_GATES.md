@@ -35,6 +35,7 @@ All gates are **enabled by default** for PRs to `main` and tag builds.
 | **Overrides** | Schema valid, no expired, applied to goldens | ✅ Blocking |
 | **Overlays & Exceptions** | Configs valid, unit tests pass, conflicts resolved | ✅ Blocking |
 | **Jurisdictions** | Registry valid, resolver tests pass, ETJ answers correct | ✅ Blocking |
+| **Citations Integrity** | Manifests valid, anchors valid, hash matches, all citations resolved | ✅ Blocking |
 | **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
 ## Enabling Quality Gates
@@ -236,6 +237,16 @@ To make quality gates blocking:
 - ✅ CI uploads telemetry.ndjson artifact
 - ✅ No performance regression (Lighthouse budgets maintained)
 - ✅ Feedback events (`answer_feedback`) validated if present
+- ✅ Citation events (`citation_opened`) include version and jurisdiction_id fields
+
+## Citations Integrity Gate Criteria
+
+- ✅ All manifest files validate against schema (AJV)
+- ✅ All anchor files validate against schema (AJV)
+- ✅ Manifest hash matches computed hash of anchors file
+- ✅ All citations referenced in rules/overlays/exceptions exist in anchors
+- ✅ Stale anchor detection works (simulated in CI)
+- ✅ Version info attached to citations correctly
 
 ## Related Issues
 

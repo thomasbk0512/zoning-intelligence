@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["code_id", "anchors"],
+  "properties": {
+    "code_id": {
+      "type": "string",
+      "description": "Code identifier (e.g., 'austin_ldc_2024')"
+    },
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["section", "anchor", "snippet_hash"],
+        "properties": {
+          "section": {
+            "type": "string",
+            "description": "Section identifier (e.g., '25-2-492')"
+          },
+          "anchor": {
+            "type": "string",
+            "description": "Anchor identifier (e.g., '(A)', '(B)(1)')"
+          },
+          "snippet_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA256 hash of the code snippet"
+          },
+          "snippet": {
+            "type": "string",
+            "description": "Human-readable snippet (optional, for reference)"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

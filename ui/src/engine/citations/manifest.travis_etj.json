@@ -1,0 +1,15 @@
+{
+  "jurisdiction_id": "travis_etj",
+  "version": "2025.01",
+  "published_at": "2025-01-15",
+  "sources": [
+    {
+      "code_id": "travis_etj_ord_2024",
+      "name": "Travis County ETJ Ordinance",
+      "url": "https://example.com/travis-etj-ordinance",
+      "sections": ["3.1.0", "3.1.1", "3.1.2", "3.1.3", "3.2.0", "3.2.1", "3.2.2", "3.2.3", "3.3.0", "3.3.1", "3.3.2", "3.3.3"]
+    }
+  ],
+  "hash": "f1e2d3c4b5a6789012345678901234567890abcdef1234567890abcdef123456"
+}
+

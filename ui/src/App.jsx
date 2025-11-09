@@ -8,6 +8,7 @@ import { SkeletonCard } from './components/Skeleton'
 const Search = lazy(() => import('./pages/Search'))
 const Results = lazy(() => import('./pages/Results'))
 const Print = lazy(() => import('./pages/Print'))
+const AdminOverrides = lazy(() => import('./pages/AdminOverrides'))
 
 function App() {
   return (
@@ -48,6 +49,14 @@ function App() {
             element={
               <Suspense fallback={<div>Loading...</div>}>
                 <Print />
+              </Suspense>
+            } 
+          />
+          <Route 
+            path="/admin/overrides" 
+            element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <AdminOverrides />
               </Suspense>
             } 
           />

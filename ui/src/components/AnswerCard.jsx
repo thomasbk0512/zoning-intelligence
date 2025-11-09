@@ -3,6 +3,7 @@ import Card from './Card'
 import Button from './Button'
 import CodeModal from './CodeModal'
 import SourceList from './SourceList'
+import FeedbackSheet from './FeedbackSheet'
 import type { ZoningAnswer } from '../engine/answers/rules'
 
 interface AnswerCardProps {
@@ -20,9 +21,11 @@ const intentLabels: Record<string, string> = {
 
 export default function AnswerCard({ answer }: AnswerCardProps) {
   const [codeModalOpen, setCodeModalOpen] = useState(false)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   const label = intentLabels[answer.intent] || answer.intent
   const cardId = `answer-card-${answer.intent}`
+  const isOverridden = answer.provenance === 'override'
 
   return (
     <>
@@ -30,12 +33,19 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
         <div className="space-y-3" data-testid={cardId}>
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-lg font-semibold">{label}</h3>
-              {answer.status === 'needs_review' && (
-                <span className="inline-block mt-1 px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
-                  Needs Review
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-semibold">{label}</h3>
+                {isOverridden && (
+                  <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                    Overridden
+                  </span>
+                )}
+                {answer.status === 'needs_review' && (
+                  <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
+                    Needs Review
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -75,6 +85,16 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
               )}
             </div>
           )}
+
+          <div className="pt-2 border-t border-gray-200">
+            <button
+              onClick={() => setFeedbackOpen(true)}
+              className="text-xs text-gray-600 hover:text-primary-600 focus-ring rounded"
+              aria-label="Provide feedback on this answer"
+            >
+              Was this correct?
+            </button>
+          </div>
         </div>
       </Card>
 
@@ -83,6 +103,20 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
           answer={answer}
           isOpen={codeModalOpen}
           onClose={() => setCodeModalOpen(false)}
+        />
+      )}
+
+      {feedbackOpen && (
+        <FeedbackSheet
+          answer={answer}
+          isOpen={feedbackOpen}
+          onClose={() => setFeedbackOpen(false)}
+          onSubmit={(feedback) => {
+            // Track feedback via telemetry
+            if (typeof window !== 'undefined' && (window as any).__telem_track) {
+              ;(window as any).__telem_track('answer_feedback', feedback)
+            }
+          }}
         />
       )}
     </>

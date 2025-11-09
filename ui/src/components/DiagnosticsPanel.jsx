@@ -165,6 +165,25 @@ export default function DiagnosticsPanel({ isOpen, onClose }: DiagnosticsPanelPr
               )}
             </Card>
 
+            <Card title="Overrides">
+              {buildInfo?.overrides ? (
+                <dl className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <dt className="font-semibold">Count:</dt>
+                    <dd className="text-gray-600">{buildInfo.overrides.count || 0}</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt className="font-semibold">Hash:</dt>
+                    <dd className="text-gray-600 font-mono text-xs">
+                      {buildInfo.overrides.hash_sha256?.substring(0, 8) || 'N/A'}
+                    </dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="text-sm text-gray-600">Loading overrides info...</p>
+              )}
+            </Card>
+
             <Card title="Feature Flags">
               <dl className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -178,6 +197,10 @@ export default function DiagnosticsPanel({ isOpen, onClose }: DiagnosticsPanelPr
                 <div className="flex justify-between">
                   <dt className="font-semibold">Telemetry Enabled:</dt>
                   <dd className="text-gray-600">{import.meta.env.VITE_TELEM_ENABLE !== 'false' ? 'Yes' : 'No'}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="font-semibold">Answers Enabled:</dt>
+                  <dd className="text-gray-600">{import.meta.env.VITE_ANSWERS_ENABLE !== 'false' ? 'Yes' : 'No'}</dd>
                 </div>
               </dl>
             </Card>

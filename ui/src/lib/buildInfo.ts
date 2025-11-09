@@ -17,6 +17,10 @@ export interface BuildInfo {
       telemetry_schema_validation_pass?: boolean
     }
   }
+  overrides?: {
+    count?: number
+    hash_sha256?: string
+  }
 }
 
 let cachedBuildInfo: BuildInfo | null = null

@@ -1,0 +1,67 @@
+{
+  "merged_prs": [
+    {
+      "number": 13,
+      "merged": true,
+      "sha": "4dae3909463636ca52008184a4c00c8b9edfbab7"
+    },
+    {
+      "number": 14,
+      "merged": true,
+      "sha": "b1b83b6238b3dcbe3b1d2cbc111ede8b46640372"
+    },
+    {
+      "number": 15,
+      "merged": true,
+      "sha": "4858c7eb2bc19870aa7167d250bc9bd605d55aab"
+    },
+    {
+      "number": 16,
+      "merged": true,
+      "sha": "686e694592be0cc3aa8fa7440117f719f2b02b98"
+    }
+  ],
+  "ci_status_main": "red",
+  "milestone": {
+    "title": "v1.2.0 \u2014 UX Foundations",
+    "url": "https://github.com/thomasbk0512/zoning-intelligence/milestone/3"
+  },
+  "issues": [
+    {
+      "title": "UX-101: Design system tokens (light mode), spacing/typography scale",
+      "url": "https://github.com/thomasbk0512/zoning-intelligence/issues/20"
+    },
+    {
+      "title": "UX-102: Primary user flows (Home \u2192 Search \u2192 Results) map",
+      "url": "https://github.com/thomasbk0512/zoning-intelligence/issues/21"
+    },
+    {
+      "title": "UX-103: A11y audit & fixes to WCAG 2.1 AA",
+      "url": "https://github.com/thomasbk0512/zoning-intelligence/issues/22"
+    },
+    {
+      "title": "UX-104: Lighthouse perf/best/SEO \u2265 90 (enable LH_ENABLE=true)",
+      "url": "https://github.com/thomasbk0512/zoning-intelligence/issues/23"
+    },
+    {
+      "title": "UX-105: E2E happy paths enabled (enable E2E_ENABLE=true)",
+      "url": "https://github.com/thomasbk0512/zoning-intelligence/issues/24"
+    },
+    {
+      "title": "UX-106: Telemetry hooks for UX (clicks, retries, print)",
+      "url": "https://github.com/thomasbk0512/zoning-intelligence/issues/25"
+    }
+  ],
+  "labels_created": [
+    "v1.2.0",
+    "ux",
+    "design-system",
+    "docs",
+    "accessibility",
+    "performance",
+    "testing",
+    "ci",
+    "observability"
+  ],
+  "notes": "CI is red - check latest workflow run: https://github.com/thomasbk0512/zoning-intelligence/actions"
+}

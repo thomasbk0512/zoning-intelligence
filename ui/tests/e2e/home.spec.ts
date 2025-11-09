@@ -41,7 +41,7 @@ test.describe('Home Page', () => {
     await expect(focusedElement).toBeVisible()
   })
 
-  test('CTA navigates to Search', async ({ page }) => {
+  test('CTA navigates to Search @happy', async ({ page }) => {
     await page.goto('/')
     
     // Click the Search Property button

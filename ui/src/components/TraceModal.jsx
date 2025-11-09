@@ -2,7 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import Button from './Button'
 import CodeModal from './CodeModal'
 import { formatTraceAsJSON, formatTraceAsMarkdown } from '../lib/traceFormat'
-import { copyToClipboard } from '../lib/share'
+
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch (error) {
+    console.warn('Failed to copy to clipboard:', error)
+    return false
+  }
+}
 import type { AnswerTrace } from '../engine/answers/trace'
 import type { ZoningAnswer } from '../engine/answers/rules'
 

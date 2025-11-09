@@ -120,7 +120,6 @@ async function getStubbedAnswers(zone: string): Promise<AnswersResponse> {
       )
       
       // Enrich citations with version info (use jurisdiction from data if available)
-      const jurisdictionId = (data as any).jurisdiction === 'travis_etj' ? 'travis_etj' : 'austin'
       for (let i = 0; i < answers.length; i++) {
         answers[i].citations = await enrichCitations(answers[i].citations, jurisdictionId)
       }

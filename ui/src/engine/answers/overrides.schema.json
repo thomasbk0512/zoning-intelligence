@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["district", "intent", "value", "unit", "citation", "rationale"],
+    "properties": {
+      "district": {
+        "type": "string",
+        "description": "Zone/district identifier, e.g., 'SF-2'"
+      },
+      "intent": {
+        "enum": ["front_setback", "side_setback", "rear_setback", "max_height", "lot_coverage", "min_lot_size"]
+      },
+      "value": {
+        "type": "number"
+      },
+      "unit": {
+        "type": "string",
+        "maxLength": 12
+      },
+      "citation": {
+        "type": "object",
+        "required": ["code_id", "section", "anchor"],
+        "properties": {
+          "code_id": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "anchor": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "rationale": {
+        "type": "string",
+        "maxLength": 160,
+        "description": "Why this override exists"
+      },
+      "expires": {
+        "type": "string",
+        "format": "date",
+        "description": "Optional future sunset date (YYYY-MM-DD)"
+      },
+      "scope": {
+        "enum": ["district", "parcel"],
+        "default": "district",
+        "description": "Whether override applies to district-wide or specific parcel"
+      },
+      "apn": {
+        "type": "string",
+        "description": "Required when scope='parcel'"
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "scope": {
+              "const": "parcel"
+            }
+          }
+        },
+        "then": {
+          "required": ["apn"]
+        }
+      }
+    ],
+    "additionalProperties": false
+  }
+}
+

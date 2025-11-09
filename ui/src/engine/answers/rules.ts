@@ -28,6 +28,8 @@ export interface ZoningAnswer {
   unit?: string // e.g., "ft", "percent", "sqft"
   rationale?: string // Short explanation
   citations: CodeCitation[]
+  answer_id?: string // `${district}:${intent}` for feedback tracking
+  provenance?: 'rule' | 'override' // Whether answer comes from rules or override
 }
 
 /**
@@ -52,6 +54,7 @@ export function getAnswersForZone(zone: string): ZoningAnswer[] {
 export function getAnswerForIntent(zone: string, intent: ZoningIntent): ZoningAnswer {
   // Normalize zone (e.g., "SF-3" → "SF3")
   const normalizedZone = zone.replace(/-/g, '').toUpperCase()
+  const answerId = `${zone}:${intent}`
 
   // Austin LDC rules (simplified for MVP)
   const rules = getAustinRules(normalizedZone, intent)
@@ -64,6 +67,8 @@ export function getAnswerForIntent(zone: string, intent: ZoningIntent): ZoningAn
       unit: rules.unit,
       rationale: rules.rationale,
       citations: rules.citations,
+      answer_id: answerId,
+      provenance: 'rule',
     }
   }
 
@@ -78,6 +83,8 @@ export function getAnswerForIntent(zone: string, intent: ZoningIntent): ZoningAn
         snippet: 'See applicable district regulations',
       },
     ],
+    answer_id: answerId,
+    provenance: 'rule',
   }
 }
 

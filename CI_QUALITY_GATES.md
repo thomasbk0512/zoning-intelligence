@@ -32,6 +32,7 @@ All gates are **enabled by default** for PRs to `main` and tag builds.
 | **Contrast Failures** | 0 | ✅ Blocking |
 | **Telemetry Schema** | Validation passes | ✅ Blocking |
 | **Answers** | All golden zones have answers (no missing) | ✅ Blocking |
+| **Overrides** | Schema valid, no expired, applied to goldens | ✅ Blocking |
 | **Bundle Growth** | ≤35KB gzip | ✅ Blocking |
 
 ## Enabling Quality Gates

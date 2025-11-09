@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["answer_id", "intent", "district", "vote", "has_proposed"],
+  "properties": {
+    "answer_id": {
+      "type": "string",
+      "description": "Unique identifier: ${district}:${intent}"
+    },
+    "intent": {
+      "enum": ["front_setback", "side_setback", "rear_setback", "max_height", "lot_coverage", "min_lot_size"]
+    },
+    "district": {
+      "type": "string",
+      "description": "Zone/district identifier, e.g., 'SF-2'"
+    },
+    "vote": {
+      "enum": ["up", "down"],
+      "description": "Thumbs up (correct) or down (incorrect)"
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "Optional free-text reason"
+    },
+    "has_proposed": {
+      "type": "boolean",
+      "description": "Whether user proposed a correction"
+    },
+    "proposed": {
+      "type": "object",
+      "required": ["value", "unit", "citation"],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 12
+        },
+        "citation": {
+          "type": "object",
+          "required": ["code_id", "section", "anchor"],
+          "properties": {
+            "code_id": {
+              "type": "string"
+            },
+            "section": {
+              "type": "string"
+            },
+            "anchor": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+

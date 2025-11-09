@@ -16,6 +16,7 @@ export type TelemetryEvent =
   | WebVitalsEvent
   | AnswerRenderEvent
   | CitationOpenedEvent
+  | AnswerFeedbackEvent
 
 export interface BaseEvent {
   event_type: string
@@ -74,6 +75,25 @@ export interface AnswerRenderEvent extends BaseEvent {
 export interface CitationOpenedEvent extends BaseEvent {
   event_type: 'citation_opened'
   code_id: string
+}
+
+export interface AnswerFeedbackEvent extends BaseEvent {
+  event_type: 'answer_feedback'
+  answer_id: string
+  intent: string
+  district: string
+  vote: 'up' | 'down'
+  reason?: string
+  has_proposed: boolean
+  proposed?: {
+    value: number
+    unit: string
+    citation: {
+      code_id: string
+      section: string
+      anchor?: string
+    }
+  }
 }
 
 /**

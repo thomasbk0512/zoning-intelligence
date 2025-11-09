@@ -1,6 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
-import { ReactNode } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import { usePageViewTracking } from '../hooks/useTelemetry'
+import HelpPanel from './HelpPanel'
+import DiagnosticsPanel from './DiagnosticsPanel'
+import Button from './Button'
 
 interface LayoutProps {
   children: ReactNode
@@ -9,6 +12,17 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
   usePageViewTracking() // Track page views on route changes
+  
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [diagnosticsOpen, setDiagnosticsOpen] = useState(false)
+
+  // Check for ?debug=1 parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('debug') === '1') {
+      setDiagnosticsOpen(true)
+    }
+  }, [location.search])
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -22,7 +36,7 @@ export default function Layout({ children }: LayoutProps) {
             >
               Zoning Intelligence
             </Link>
-            <nav className="space-x-4" aria-label="Main navigation">
+            <nav className="space-x-4 flex items-center" aria-label="Main navigation">
               <Link 
                 to="/" 
                 className={`text-sm sm:text-base transition-colors focus-ring rounded ${
@@ -43,6 +57,14 @@ export default function Layout({ children }: LayoutProps) {
               >
                 Search
               </Link>
+              <Button
+                variant="secondary"
+                onClick={() => setHelpOpen(true)}
+                className="text-sm"
+                aria-label="Open help"
+              >
+                Help
+              </Button>
             </nav>
           </div>
         </div>
@@ -51,6 +73,9 @@ export default function Layout({ children }: LayoutProps) {
       <main className="flex-grow" role="main">
         {children}
       </main>
+      
+      <HelpPanel isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
+      <DiagnosticsPanel isOpen={diagnosticsOpen} onClose={() => setDiagnosticsOpen(false)} />
       
       <footer className="bg-gray-800 text-white py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

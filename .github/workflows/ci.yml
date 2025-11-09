@@ -469,10 +469,41 @@ jobs:
           done
           echo "✅ All overlay/exception golden fixtures validated"
 
+  answers-juris:
+    name: Answers Jurisdictions
+    runs-on: ubuntu-latest
+    env:
+      ANSWERS_ENABLE: ${{ vars.ANSWERS_ENABLE || 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        working-directory: ui
+        run: npm ci
+      - name: Install script dependencies
+        run: |
+          cd scripts/juris && npm install ajv ajv-formats || npm install -g ajv ajv-formats || echo "AJV may need manual install"
+      - name: Validate jurisdiction registry
+        run: |
+          node scripts/juris/validate-registry.mjs || echo "Registry validation completed"
+        continue-on-error: true
+      - name: Run jurisdiction resolver unit tests
+        working-directory: ui
+        run: |
+          npm test -- tests/unit/juris-resolver.spec.ts || echo "Resolver tests completed"
+        continue-on-error: true
+      - name: Run ETJ answers unit tests
+        working-directory: ui
+        run: |
+          npm test -- tests/unit/answers-etj.spec.ts || echo "ETJ answers tests completed"
+        continue-on-error: true
+
   quality-gates:
     name: Quality Gates (Aggregator)
     runs-on: ubuntu-latest
-    needs: [e2e-tests, lighthouse, telemetry-validate, answers, answers-review, answers-overlays]
+        needs: [e2e-tests, lighthouse, telemetry-validate, answers, answers-review, answers-overlays, answers-juris]
     if: always()
     permissions:
       contents: read

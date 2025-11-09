@@ -1,0 +1,109 @@
+{
+  "zone": "SF-3",
+  "jurisdiction": "travis_etj",
+  "answers": [
+    {
+      "intent": "front_setback",
+      "status": "answered",
+      "value": 25,
+      "unit": "ft",
+      "rationale": "Minimum front yard setback for SF-3 in Travis County ETJ",
+      "citations": [
+        {
+          "code_id": "travis_etj_ord_2024",
+          "section": "3.3.1",
+          "anchor": "(A)",
+          "snippet": "Front yard: 25 feet minimum"
+        }
+      ],
+      "answer_id": "SF-3:front_setback",
+      "provenance": "rule"
+    },
+    {
+      "intent": "side_setback",
+      "status": "answered",
+      "value": 5,
+      "unit": "ft",
+      "rationale": "Minimum interior side yard setback for SF-3 in Travis County ETJ",
+      "citations": [
+        {
+          "code_id": "travis_etj_ord_2024",
+          "section": "3.3.1",
+          "anchor": "(B)",
+          "snippet": "Interior side yard: 5 feet minimum"
+        }
+      ],
+      "answer_id": "SF-3:side_setback",
+      "provenance": "rule"
+    },
+    {
+      "intent": "rear_setback",
+      "status": "answered",
+      "value": 10,
+      "unit": "ft",
+      "rationale": "Minimum rear yard setback for SF-3 in Travis County ETJ",
+      "citations": [
+        {
+          "code_id": "travis_etj_ord_2024",
+          "section": "3.3.1",
+          "anchor": "(C)",
+          "snippet": "Rear yard: 10 feet minimum"
+        }
+      ],
+      "answer_id": "SF-3:rear_setback",
+      "provenance": "rule"
+    },
+    {
+      "intent": "max_height",
+      "status": "answered",
+      "value": 35,
+      "unit": "ft",
+      "rationale": "Maximum building height for SF-3 in Travis County ETJ",
+      "citations": [
+        {
+          "code_id": "travis_etj_ord_2024",
+          "section": "3.3.2",
+          "anchor": "(A)",
+          "snippet": "Maximum height: 35 feet"
+        }
+      ],
+      "answer_id": "SF-3:max_height",
+      "provenance": "rule"
+    },
+    {
+      "intent": "lot_coverage",
+      "status": "answered",
+      "value": 40,
+      "unit": "percent",
+      "rationale": "Maximum lot coverage for SF-3 in Travis County ETJ",
+      "citations": [
+        {
+          "code_id": "travis_etj_ord_2024",
+          "section": "3.3.3",
+          "anchor": "(A)",
+          "snippet": "Maximum lot coverage: 40 percent"
+        }
+      ],
+      "answer_id": "SF-3:lot_coverage",
+      "provenance": "rule"
+    },
+    {
+      "intent": "min_lot_size",
+      "status": "answered",
+      "value": 5750,
+      "unit": "sqft",
+      "rationale": "Minimum lot size for SF-3 in Travis County ETJ",
+      "citations": [
+        {
+          "code_id": "travis_etj_ord_2024",
+          "section": "3.3.0",
+          "anchor": "(A)",
+          "snippet": "Minimum lot size: 5,750 square feet"
+        }
+      ],
+      "answer_id": "SF-3:min_lot_size",
+      "provenance": "rule"
+    }
+  ]
+}
+

@@ -15,6 +15,7 @@ export interface AnswersRequest {
   longitude?: number
   city: string
   zone: string
+  jurisdictionId?: string // Jurisdiction ID (e.g., "austin", "travis_etj")
   applyOverrides?: boolean // Whether to apply overrides (default: true)
   overlays?: string[] // Overlay IDs, e.g., ["HD", "NP"]
   lotContext?: LotContext // Lot-specific context (corner, flag, frontage, slope)
@@ -49,7 +50,8 @@ export async function getAnswers(request: AnswersRequest): Promise<AnswersRespon
   // Real mode: use rules engine (in-process, no network)
   const { getAnswersForZone } = await import('../engine/answers/rules')
   const startTime = typeof performance !== 'undefined' ? performance.now() : Date.now()
-  let answers = getAnswersForZone(request.zone)
+  const jurisdictionId = request.jurisdictionId || 'austin' // Default to Austin
+  let answers = getAnswersForZone(request.zone, jurisdictionId)
   const msTotal = typeof performance !== 'undefined' ? Math.round(performance.now() - startTime) : 0
 
   // Apply overlays, exceptions, and overrides if enabled (default: true)

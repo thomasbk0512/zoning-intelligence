@@ -1,0 +1,117 @@
+{
+  "version": "1.0.0",
+  "frozen_at": "2025-11-09T15:43:30.979Z",
+  "fields": [
+    {
+      "name": "apn",
+      "type": "string",
+      "required": true,
+      "description": "Assessor's Parcel Number"
+    },
+    {
+      "name": "jurisdiction",
+      "type": "string",
+      "required": true,
+      "description": "Jurisdiction name (e.g., \"Austin, TX\")"
+    },
+    {
+      "name": "zone",
+      "type": "string",
+      "required": true,
+      "description": "Zoning designation"
+    },
+    {
+      "name": "setbacks_ft",
+      "type": "object",
+      "required": true,
+      "description": "Setback distances in feet",
+      "properties": {
+        "front": {
+          "type": "number",
+          "unit": "ft",
+          "tolerance": 0.1
+        },
+        "side": {
+          "type": "number",
+          "unit": "ft",
+          "tolerance": 0.1
+        },
+        "rear": {
+          "type": "number",
+          "unit": "ft",
+          "tolerance": 0.1
+        },
+        "street_side": {
+          "type": "number",
+          "unit": "ft",
+          "tolerance": 0.1
+        }
+      }
+    },
+    {
+      "name": "height_ft",
+      "type": "number",
+      "required": true,
+      "unit": "ft",
+      "tolerance": 0,
+      "description": "Height limit in feet"
+    },
+    {
+      "name": "far",
+      "type": "number",
+      "required": true,
+      "description": "Floor Area Ratio"
+    },
+    {
+      "name": "lot_coverage_pct",
+      "type": "number",
+      "required": true,
+      "unit": "percent",
+      "description": "Lot coverage percentage"
+    },
+    {
+      "name": "overlays",
+      "type": "array",
+      "required": true,
+      "items": {
+        "type": "string"
+      },
+      "description": "Overlay districts"
+    },
+    {
+      "name": "sources",
+      "type": "array",
+      "required": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "cite": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Data sources"
+    },
+    {
+      "name": "notes",
+      "type": "string",
+      "required": true,
+      "description": "Additional notes"
+    },
+    {
+      "name": "run_ms",
+      "type": "number",
+      "required": true,
+      "unit": "milliseconds",
+      "description": "Query execution time"
+    }
+  ],
+  "tolerance": {
+    "distances_ft": 0.1,
+    "height_ft": 0
+  },
+  "lock_hash_sha256": "9bf11c5665cd948eb8b7f51d3b69bf749ff5917a2d64066007f9ad1875e71b54"
+}

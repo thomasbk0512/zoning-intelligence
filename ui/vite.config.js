@@ -10,7 +10,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    copyPublicDir: true, // Copy public/ directory (includes build_info.json)
   },
   esbuild: {
     loader: 'tsx',

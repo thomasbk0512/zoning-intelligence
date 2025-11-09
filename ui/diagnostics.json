@@ -1,0 +1,15 @@
+{
+  "version": "1.1.2",
+  "build_time": "2025-11-09T00:00:00Z",
+  "environment": "production",
+  "features": {
+    "telemetry": true,
+    "metrics": true,
+    "structured_logging": true
+  },
+  "endpoints": {
+    "api": "/api",
+    "diagnostics": "/diagnostics.json"
+  }
+}
+

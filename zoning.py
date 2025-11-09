@@ -13,6 +13,14 @@ from parsers.llm import parse_pdf_with_llm
 from engine.geom import intersect_zone, detect_overlays, is_corner_lot
 from engine.apply_rules import load_rules, get_zone_rules, apply_zone_rules, get_overlay_rules, get_crs_config
 from engine.schemas import create_output_schema, validate_output_schema
+from engine.telemetry import (
+    emit_metrics,
+    incr,
+    log,
+    set_gauge,
+    start_timer,
+    stop_timer,
+)
 
 
 # Jurisdiction configuration
@@ -122,9 +130,16 @@ def main():
     start_time = time.time()
     args = parse_args()
     
+    # Initialize telemetry
+    start_timer("total_runtime")
+    log("info", "Zoning CLI started", apn=args.apn, lat_lng=args.lat_lng, city=args.city)
+    
     try:
         # Load jurisdiction data
+        start_timer("data_load")
         data = load_jurisdiction_data(args.city, args.data_dir, args.verbose)
+        data_load_ms = stop_timer("data_load") * 1000
+        log("info", "Data loaded", data_load_ms=data_load_ms)
         
         # Parse input
         lat_lng = None
@@ -136,18 +151,27 @@ def main():
                 sys.exit(f"Invalid lat-lng format: {args.lat_lng}")
         
         # Find parcel
+        start_timer("parcel_lookup")
         parcel, apn = find_parcel(data, args.apn, lat_lng, args.verbose)
+        parcel_lookup_ms = stop_timer("parcel_lookup") * 1000
+        incr("parcels_processed")
+        log("info", "Parcel found", parcel_lookup_ms=parcel_lookup_ms, apn=apn)
         
         # Get zone
+        start_timer("rules_application")
         zone = intersect_zone(parcel, data["zoning"])
         if zone is None:
             zone = "UNKNOWN"
+            incr("warnings_count")
+            log("warning", "No zone intersection found")
             if args.verbose:
                 print("Warning: No zone intersection found")
         
         # Get zone rules
         zone_rules = get_zone_rules(data["rules"], zone)
         if zone_rules is None:
+            incr("errors_count")
+            log("error", "No rules found for zone", zone=zone)
             raise ValueError(f"No rules found for zone: {zone}")
         
         # Detect corner lot
@@ -155,10 +179,13 @@ def main():
         
         # Apply zone rules
         zone_constraints = apply_zone_rules(zone_rules, corner_lot)
+        incr("rules_applied")
         
         # Detect overlays
         overlays = detect_overlays(parcel, data["overlay_gdfs"])
         overlay_rules = get_overlay_rules(data["rules"], overlays)
+        rules_ms = stop_timer("rules_application") * 1000
+        log("info", "Rules applied", rules_ms=rules_ms, zone=zone)
         
         # Build notes
         notes_parts = []
@@ -186,6 +213,7 @@ def main():
                 sources.append({"type": "code", "cite": citation})
         
         # Build output
+        start_timer("output_write")
         run_ms = (time.time() - start_time) * 1000
         # Format jurisdiction: "austin_tx" -> "Austin, TX"
         jurisdiction_raw = data["rules"].get("jurisdiction", args.city)
@@ -216,12 +244,26 @@ def main():
         # Write output
         with open(args.out, 'w') as f:
             json.dump(output, f, indent=2)
+        output_write_ms = stop_timer("output_write") * 1000
+        log("info", "Output written", output_file=args.out, output_write_ms=output_write_ms)
+        
+        # Emit metrics
+        total_runtime_ms = stop_timer("total_runtime") * 1000
+        set_gauge("total_runtime_ms", total_runtime_ms)
+        
+        # Emit metrics to file if requested
+        metrics_path = args.out.replace(".json", "_metrics.json")
+        if args.verbose:
+            emit_metrics(metrics_path)
+            log("info", "Metrics emitted", metrics_file=metrics_path)
         
         if args.verbose:
             print(f"Output written to {args.out}")
             print(f"Runtime: {run_ms:.0f}ms")
         
     except Exception as e:
+        incr("errors_count")
+        log("error", "Unhandled exception", error=str(e), error_type=type(e).__name__, exc_info=True)
         if args.verbose:
             import traceback
             traceback.print_exc()

@@ -95,6 +95,28 @@ jobs:
         if: steps.ui.outputs.present == 'false'
         run: echo "No package.json found in repo or /ui — skipping UI job."
 
+      - name: Emit metrics
+        if: steps.py.outputs.present == 'true'
+        run: |
+          if [ -f "zoning/scripts/emit_metrics.py" ]; then
+            python3 zoning/scripts/emit_metrics.py --output metrics.json || echo "Metrics emission failed, continuing"
+          else
+            echo "Metrics script not found, creating placeholder"
+            echo '{"ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","parcels_processed":0,"rules_applied":0,"total_runtime_ms":0,"errors_count":0}' > metrics.json
+          fi
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: observability-artifacts
+          path: |
+            cache/logs/**
+            metrics.json
+            ui/lhci/**
+          retention-days: 7
+          if-no-files-found: ignore
+
   e2e-tests:
     name: E2E Tests (Playwright)
     runs-on: ubuntu-latest

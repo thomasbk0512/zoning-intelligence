@@ -4,7 +4,10 @@ import Button from './Button'
 import CodeModal from './CodeModal'
 import SourceList from './SourceList'
 import FeedbackSheet from './FeedbackSheet'
+import TraceModal from './TraceModal'
 import type { ZoningAnswer } from '../engine/answers/rules'
+import type { AnswerTrace } from '../engine/answers/trace'
+import type { CitationWithVersion } from '../engine/answers/citations'
 
 interface AnswerCardProps {
   answer: ZoningAnswer
@@ -22,6 +25,9 @@ const intentLabels: Record<string, string> = {
 export default function AnswerCard({ answer }: AnswerCardProps) {
   const [codeModalOpen, setCodeModalOpen] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const [traceModalOpen, setTraceModalOpen] = useState(false)
+  
+  const trace = (answer as any).trace as AnswerTrace | undefined
 
   const label = intentLabels[answer.intent] || answer.intent
   const cardId = `answer-card-${answer.intent}`
@@ -108,15 +114,26 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
           {answer.citations.length > 0 && (
             <div className="pt-2 border-t border-gray-200">
               <SourceList citations={answer.citations} />
-              {answer.citations.some(c => c.snippet) && (
-                <Button
-                  variant="secondary"
-                  onClick={() => setCodeModalOpen(true)}
-                  className="mt-2 text-sm"
-                >
-                  View Code
-                </Button>
-              )}
+              <div className="flex gap-2 mt-2">
+                {answer.citations.some(c => c.snippet) && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => setCodeModalOpen(true)}
+                    className="text-sm"
+                  >
+                    View Code
+                  </Button>
+                )}
+                {trace && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => setTraceModalOpen(true)}
+                    className="text-sm"
+                  >
+                    Explain
+                  </Button>
+                )}
+              </div>
             </div>
           )}
 
@@ -151,6 +168,15 @@ export default function AnswerCard({ answer }: AnswerCardProps) {
               ;(window as any).__telem_track('answer_feedback', feedback)
             }
           }}
+        />
+      )}
+
+      {traceModalOpen && trace && (
+        <TraceModal
+          answer={answer}
+          trace={trace}
+          isOpen={traceModalOpen}
+          onClose={() => setTraceModalOpen(false)}
         />
       )}
     </>

@@ -14,6 +14,15 @@ import type { CodeCitation } from './rules'
 import { applyOverlayAdjustments, loadOverlayAdjustments, type OverlayAdjustment } from './overlays'
 import { loadExceptionRules, evaluatePredicate, type ExceptionRule, type LotContext } from './conditions'
 import { resolveConflicts, type ConflictSource } from './conflicts'
+import {
+  buildTrace,
+  createRuleStep,
+  createOverlayStep,
+  createExceptionStep,
+  createOverrideStep,
+  type TraceStep,
+  type AnswerTrace,
+} from './trace'
 
 export interface Override {
   district: string
@@ -40,6 +49,7 @@ export interface ParcelContext {
  * @param apn - Optional APN for parcel-scoped override matching
  * @param overlayContext - Optional overlay context (overlay IDs)
  * @param lotContext - Optional lot context (corner, flag, frontage, slope)
+ * @param jurisdictionId - Jurisdiction ID for trace building
  * @returns Merged answer with all adjustments applied
  */
 export async function mergeWithOverrides(
@@ -47,7 +57,8 @@ export async function mergeWithOverrides(
   overrides: Override[],
   apn?: string,
   overlayContext?: { overlays: string[] },
-  lotContext?: LotContext
+  lotContext?: LotContext,
+  jurisdictionId?: string
 ): Promise<ZoningAnswer> {
   if (!answer.answer_id) {
     return answer
@@ -58,11 +69,21 @@ export async function mergeWithOverrides(
     return answer
   }
 
+  // Build trace steps
+  const traceSteps: TraceStep[] = []
+  let currentValue = answer.value
+
   // Collect all potential sources
   const sources: ConflictSource[] = []
 
-  // 1. Base rule
+  // 1. Base rule (always first step)
   if (answer.value !== undefined && answer.status === 'answered') {
+    const ruleId = `rule.${district}.${intent}`
+    const ruleExpr = `${answer.value}`
+    traceSteps.push(
+      createRuleStep(ruleId, answer.value, ruleExpr, answer.citations)
+    )
+    
     sources.push({
       type: 'rule',
       value: answer.value,
@@ -80,6 +101,25 @@ export async function mergeWithOverrides(
       overlayContext
     )
     if (appliedOverlays.length > 0 && overlayAnswer.value !== undefined) {
+      // Find the overlay adjustment that was applied
+      for (const overlayId of appliedOverlays) {
+        const overlay = overlayAdjustments.find(o => o.id === overlayId)
+        if (overlay && currentValue !== undefined) {
+          const prevValue = currentValue
+          currentValue = overlayAnswer.value
+          traceSteps.push(
+            createOverlayStep(
+              `overlay.${overlayId}`,
+              overlay.op,
+              prevValue,
+              overlay.value,
+              currentValue,
+              overlay.citations
+            )
+          )
+        }
+      }
+      
       sources.push({
         type: 'overlay',
         id: appliedOverlays[0],
@@ -98,22 +138,35 @@ export async function mergeWithOverrides(
     for (const rule of exceptionRules) {
       if (evaluatePredicate(rule.predicate, lotContext)) {
         const adjustment = rule.adjustments.find(a => a.intent === intent)
-        if (adjustment && answer.value !== undefined) {
-          let exceptionValue = answer.value
+        if (adjustment && currentValue !== undefined) {
+          const prevValue = currentValue
+          let exceptionValue = currentValue
           switch (adjustment.op) {
             case 'replace':
               exceptionValue = adjustment.value
               break
             case 'add':
-              exceptionValue = answer.value + adjustment.value
+              exceptionValue = currentValue + adjustment.value
               break
             case 'max':
-              exceptionValue = Math.min(answer.value, adjustment.value)
+              exceptionValue = Math.min(currentValue, adjustment.value)
               break
             case 'min':
-              exceptionValue = Math.max(answer.value, adjustment.value)
+              exceptionValue = Math.max(currentValue, adjustment.value)
               break
           }
+          currentValue = exceptionValue
+          traceSteps.push(
+            createExceptionStep(
+              `exception.${rule.id}`,
+              adjustment.op,
+              prevValue,
+              adjustment.value,
+              exceptionValue,
+              rule.citations
+            )
+          )
+          
           sources.push({
             type: 'exception',
             id: rule.id,
@@ -143,6 +196,16 @@ export async function mergeWithOverrides(
     const districtOverride = applicableOverrides.find(o => o.scope === 'district' || !o.scope)
     const selectedOverride = parcelOverride || districtOverride
     if (selectedOverride) {
+      const prevValue = currentValue
+      currentValue = selectedOverride.value
+      traceSteps.push(
+        createOverrideStep(
+          `override.${selectedOverride.scope || 'district'}`,
+          selectedOverride.value,
+          [selectedOverride.citation]
+        )
+      )
+      
       sources.push({
         type: 'override',
         id: selectedOverride.scope,
@@ -158,6 +221,16 @@ export async function mergeWithOverrides(
   const resolvedAnswer = {
     ...resolution.answer,
     intent: answer.intent, // Preserve original intent
+  }
+
+  // Attach trace to answer if jurisdictionId provided
+  if (jurisdictionId && traceSteps.length > 0) {
+    try {
+      const trace = buildTrace(resolvedAnswer, jurisdictionId, district, traceSteps)
+      ;(resolvedAnswer as any).trace = trace
+    } catch (error) {
+      console.warn('Failed to build trace:', error)
+    }
   }
 
   return resolvedAnswer

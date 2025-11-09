@@ -22,6 +22,8 @@ export type TelemetryEvent =
   | ReportGeneratedEvent
   | ReportSharedEvent
   | IntentDetectedEvent
+  | TraceOpenedEvent
+  | TraceCopiedEvent
 
 export interface BaseEvent {
   event_type: string
@@ -134,6 +136,18 @@ export interface IntentDetectedEvent extends BaseEvent {
   intent: string
   confidence: number
   mode: 'apn' | 'latlng' | 'none'
+}
+
+export interface TraceOpenedEvent extends BaseEvent {
+  event_type: 'trace_opened'
+  intent: string
+  jurisdiction_id: string
+  district: string
+}
+
+export interface TraceCopiedEvent extends BaseEvent {
+  event_type: 'trace_copied'
+  format: 'json' | 'md'
 }
 
 /**

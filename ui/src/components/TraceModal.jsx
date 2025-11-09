@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import Button from './Button'
 import CodeModal from './CodeModal'
 import { formatTraceAsJSON, formatTraceAsMarkdown } from '../lib/traceFormat'
+import type { AnswerTrace } from '../engine/answers/trace'
+import type { ZoningAnswer } from '../engine/answers/rules'
 
 async function copyToClipboard(text: string): Promise<boolean> {
   try {
@@ -12,8 +14,6 @@ async function copyToClipboard(text: string): Promise<boolean> {
     return false
   }
 }
-import type { AnswerTrace } from '../engine/answers/trace'
-import type { ZoningAnswer } from '../engine/answers/rules'
 
 interface TraceModalProps {
   answer: ZoningAnswer
